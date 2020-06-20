@@ -1,0 +1,15 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:Proggy.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Proggy.Views.BasicModeView">
+    <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
+          <DropDown SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></DropDown>
+          <DropDown SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></DropDown>
+        </StackPanel>
+        <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
+    </DockPanel>
+</UserControl>
