@@ -7,8 +7,8 @@
 
     <StackPanel Height="40" Orientation="Horizontal" HorizontalAlignment="Center">
         <DropDown SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></DropDown>
-        <Button Content="Start"></Button>
-        <Button Content="Settings"></Button>
+        <Button Content="Start" Command="{Binding Start}"></Button>
+        <Button Content="Settings" Command="{Binding Stop}"></Button>
     </StackPanel>
 
 </UserControl>

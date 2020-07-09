@@ -21,6 +21,7 @@
     <PackageReference Include="Avalonia" Version="0.9.10" />
     <PackageReference Include="Avalonia.Desktop" Version="0.9.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.10" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\GlobalControls.xaml">

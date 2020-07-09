@@ -1,4 +1,5 @@
 ﻿using Proggy.Controls;
+using Proggy.Core;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace Proggy.ViewModels
             SelectedBeats = 4;
             SelectedNoteLength = 4;
 
-            globalControls = new GlobalControlsViewModel();
+            globalControls = new GlobalControlsViewModel(new SinglePulsePlayer());
         }
     }
 }
