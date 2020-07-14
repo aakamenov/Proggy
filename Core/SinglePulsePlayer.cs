@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -10,17 +12,22 @@ namespace Proggy.Core
         private bool isPlaying;
         private IDisposable clickLoop;
 
-        public void Play(int interval, short beatsPerMeasure)
-        {          
-            short beatsElapsed = beatsPerMeasure;
+        public bool IsPlaying => isPlaying;
+
+        public void Play(IEnumerable<BarInfo> clickData)
+        {
+            isPlaying = true;
+
+            var info = clickData.First();
+            var beatsElapsed = info.Beats;
             
-            clickLoop = Observable.Interval(TimeSpan.FromMilliseconds(interval))
+            clickLoop = Observable.Interval(TimeSpan.FromMilliseconds(info.Interval))
                 .DoWhile(() => isPlaying)
                 .Subscribe((_) => 
                 {
                     double frequency;
 
-                    if (beatsElapsed == beatsPerMeasure)
+                    if (beatsElapsed == info.Beats)
                     {
                         frequency = 4000;
                         beatsElapsed = 1;

@@ -7,7 +7,8 @@ namespace Proggy.Core
 {
     public interface IClickPlayer
     {
-        void Play(int interval, short beatsPerMeasure);
+        bool IsPlaying { get; }
+        void Play(IEnumerable<BarInfo> clickData);
         void Stop();
     }
 }

@@ -19,6 +19,13 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref selectedMode, value);
         }
 
+        public string PlayButtonText
+        {
+            get => playButtonText;
+            set => this.RaiseAndSetIfChanged(ref playButtonText, value);
+        }
+
+        private string playButtonText;
         private string selectedMode;
         private readonly IClickPlayer player;
 
@@ -26,16 +33,26 @@ namespace Proggy.ViewModels
         {
             SelectedMode = modes[0];
             this.player = player;
+            playButtonText = "Play";
         }
 
-        public void Start()
+        public void Toggle()
         {
-            player.Play(500, 4);
+            if (player.IsPlaying)
+            {
+                player.Stop();
+                PlayButtonText = "Play";
+            }
+            else
+            {
+                player.Play(new BarInfo[] { new BarInfo(120, 4, 4) });
+                PlayButtonText = "Stop";
+            }
         }
 
-        public void Stop()
+        public void Settings()
         {
-            player.Stop();
+            
         }
     }
 }
