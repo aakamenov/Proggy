@@ -13,7 +13,7 @@
             if(noteLength != 4)
             {
                 if (noteLength > 4)
-                    Interval /= noteLength;
+                    Interval /= noteLength / 4;
                 else
                     Interval *= noteLength;
             }

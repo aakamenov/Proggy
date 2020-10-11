@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-
 
 namespace Proggy.Core
 {
     public class AudioPlayer : IDisposable
     {
         public static AudioPlayer Instance => instance;
+
+        public bool IsPlaying => outputDevice.PlaybackState == PlaybackState.Playing;
 
         public float Volume
         {
@@ -48,8 +47,14 @@ namespace Proggy.Core
 
         public void PlaySound(ISampleProvider input)
         {
+            mixer.RemoveAllMixerInputs();
             AddMixerInput(input);
             outputDevice.Play();
+        }
+
+        public void Stop()
+        {
+            outputDevice.Stop();
         }
 
         public void Dispose()

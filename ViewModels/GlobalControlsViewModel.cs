@@ -25,27 +25,29 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref playButtonText, value);
         }
 
+        public IList<BarInfo> BarInfo => trackBuilder.BarInfo;
+
         private string playButtonText;
         private string selectedMode;
-        private readonly IClickPlayer player;
+        private readonly IClickTrackBuilder trackBuilder;
 
-        public GlobalControlsViewModel(IClickPlayer player)
+        public GlobalControlsViewModel(IClickTrackBuilder trackBuilder)
         {
             SelectedMode = modes[0];
-            this.player = player;
+            this.trackBuilder = trackBuilder;
             playButtonText = "Play";
         }
 
         public void Toggle()
         {
-            if (player.IsPlaying)
+            if (AudioPlayer.Instance.IsPlaying)
             {
-                player.Stop();
+                AudioPlayer.Instance.Stop();
                 PlayButtonText = "Play";
             }
             else
             {
-                player.Play(new BarInfo[] { new BarInfo(120, 4, 4) });
+                AudioPlayer.Instance.PlaySound(trackBuilder.Build());
                 PlayButtonText = "Stop";
             }
         }

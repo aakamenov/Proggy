@@ -9,6 +9,7 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
           <DropDown SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></DropDown>
           <DropDown SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></DropDown>
+          <TextBox Text="{Binding TempoTextBoxText}" MaxLength="3"  AcceptsReturn="False" AcceptsTab="False"/>
         </StackPanel>
         <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
     </DockPanel>
