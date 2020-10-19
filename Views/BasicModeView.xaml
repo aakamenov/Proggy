@@ -7,9 +7,9 @@
              x:Class="Proggy.Views.BasicModeView">
     <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
-          <DropDown SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></DropDown>
-          <DropDown SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></DropDown>
-          <TextBox Text="{Binding TempoTextBoxText}" MaxLength="3"  AcceptsReturn="False" AcceptsTab="False"/>
+          <DropDown Classes="dropdown" Width="53" SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></DropDown>
+          <DropDown Classes="dropdown" Width="53" SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></DropDown>
+          <TextBox Classes="textbox" TextAlignment="Center" Width="53" Text="{Binding TempoTextBoxText}" MaxLength="3" AcceptsReturn="False" AcceptsTab="False"/>
         </StackPanel>
         <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
     </DockPanel>
