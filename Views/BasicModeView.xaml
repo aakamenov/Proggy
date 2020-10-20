@@ -9,7 +9,7 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
           <DropDown Classes="dropdown" Width="53" SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></DropDown>
           <DropDown Classes="dropdown" Width="53" SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></DropDown>
-          <TextBox Classes="textbox" TextAlignment="Center" Width="53" Text="{Binding TempoTextBoxText}" MaxLength="3" AcceptsReturn="False" AcceptsTab="False"/>
+          <NumericUpDown Classes="textbox" Width="60" Value="{Binding TempoNumericBoxValue}" HorizontalAlignment="Center" ClipValueToMinMax="True" Minimum="33" Maximum="300"/>
         </StackPanel>
         <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
     </DockPanel>

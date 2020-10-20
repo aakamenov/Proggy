@@ -5,7 +5,7 @@
         public int Interval { get; }
         public short Beats { get; }
 
-        public BarInfo(int tempo, short beats, short noteLength)
+        public BarInfo(short tempo, short beats, short noteLength)
         {
             Beats = beats;
             Interval = 60000 / tempo;

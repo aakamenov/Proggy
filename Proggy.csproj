@@ -1,10 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <Compile Update="**\*.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
@@ -15,6 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Remove="Controls\GlobalControls.xaml" />
+    <AvaloniaResource Remove="Views\AdvancedModeView.xaml" />
     <AvaloniaResource Remove="Views\BasicModeView.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +28,9 @@
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\BasicModeView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\AdvancedModeView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>

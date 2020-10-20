@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Proggy.Controls;
+using System.Reactive.Linq;
 using Proggy.Core;
+using Proggy.Infrastructure;
 using ReactiveUI;
-
 
 namespace Proggy.ViewModels
 {
@@ -19,40 +17,25 @@ namespace Proggy.ViewModels
         public short SelectedBeats 
         {
             get => selectedBeats;
-            set 
-            { 
-                this.RaiseAndSetIfChanged(ref selectedBeats, value);
-                SetTimeSignature();
-            }
+            set => this.RaiseAndSetIfChanged(ref selectedBeats, value);
         }
 
         public short SelectedNoteLength
         {
             get => selectedNoteLength;
-            set 
-            { 
-                this.RaiseAndSetIfChanged(ref selectedNoteLength, value);
-                SetTimeSignature();
-            }
+            set => this.RaiseAndSetIfChanged(ref selectedNoteLength, value);
         }
 
-        public string TempoTextBoxText
+        public short TempoNumericBoxValue
         {
-            get => tempoTextBoxText;
-            set 
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    return;
-
-                this.RaiseAndSetIfChanged(ref tempoTextBoxText, value);
-                SetTimeSignature();
-            }
+            get => tempoNumericBoxValue;
+            set => this.RaiseAndSetIfChanged(ref tempoNumericBoxValue, value);
         }
 
         public GlobalControlsViewModel GlobalControls => globalControls;
         private readonly GlobalControlsViewModel globalControls;
 
-        private string tempoTextBoxText;
+        private short tempoNumericBoxValue;
         private short selectedNoteLength;
         private short selectedBeats;
         private short[] beats;
@@ -63,19 +46,21 @@ namespace Proggy.ViewModels
 
             for (short i = 2; i <= MAX_BEATS; i++)
                 beats[i - 2] = i;
-
+            
             selectedBeats = 4;
             selectedNoteLength = 4;
-            tempoTextBoxText = "120";
-
-            globalControls = new GlobalControlsViewModel(new SinglePulseTrackBuilder());
-            SetTimeSignature();
+            tempoNumericBoxValue = 120;
+            
+            globalControls = new GlobalControlsViewModel(new SinglePulseTrackBuilder(), MetronomeMode.Basic);
+            
+            this.WhenAnyValue(x => x.SelectedBeats, x => x.SelectedNoteLength, x => x.TempoNumericBoxValue)
+                .Subscribe(x => SetTimeSignature(x.Item1, x.Item2, x.Item3));
         }
 
-        private void SetTimeSignature()
+        private void SetTimeSignature(short beats, short noteLength, short tempo)
         {
             globalControls.BarInfo.Clear();
-            globalControls.BarInfo.Add(new BarInfo(int.Parse(tempoTextBoxText), selectedBeats, selectedNoteLength));
+            globalControls.BarInfo.Add(new BarInfo(tempo, beats, noteLength));
         }
     }
 }
