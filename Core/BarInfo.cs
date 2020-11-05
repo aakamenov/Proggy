@@ -1,12 +1,16 @@
 ﻿namespace Proggy.Core
 {
-    public struct BarInfo
+    public class BarInfo
     {
         public int Interval { get; }
         public short Beats { get; }
+        public short NoteLength { get; }
+        public short Tempo { get; }
 
         public BarInfo(short tempo, short beats, short noteLength)
         {
+            NoteLength = noteLength;
+            Tempo = tempo;
             Beats = beats;
             Interval = 60000 / tempo;
 

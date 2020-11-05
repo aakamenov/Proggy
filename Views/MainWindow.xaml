@@ -7,8 +7,12 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
         x:Class="Proggy.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Width="350"
-        Height="250"
+        Width="{Binding WindowWidth}"
+        Height="{Binding WindowHeight}"
+        MinWidth="{Binding WindowWidth}"
+        MinHeight="{Binding WindowHeight}"
+        CanResize="{Binding CanResize}"
+        SizeToContent="Manual"
         Title="Proggy"
         Content="{Binding CurrentView}">
 </Window>

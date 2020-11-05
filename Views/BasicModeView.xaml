@@ -3,14 +3,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="clr-namespace:Proggy.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="250"
              x:Class="Proggy.Views.BasicModeView">
-    <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
-          <DropDown Classes="dropdown" Width="53" SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></DropDown>
-          <DropDown Classes="dropdown" Width="53" SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></DropDown>
-          <NumericUpDown Classes="textbox" Width="60" Value="{Binding TempoNumericBoxValue}" HorizontalAlignment="Center" ClipValueToMinMax="True" Minimum="33" Maximum="300"/>
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <material:Card>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <ComboBox SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></ComboBox>
+          <ComboBox SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></ComboBox>
+          <NumericUpDown Value="{Binding TempoNumericBoxValue}" ClipValueToMinMax="True" Minimum="33" Maximum="300"/>
         </StackPanel>
-        <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
-    </DockPanel>
+      </material:Card>
+      <material:Card>
+        <controls:GlobalControls DataContext="{Binding GlobalControls}"></controls:GlobalControls>
+      </material:Card>  
+    </StackPanel>
 </UserControl>

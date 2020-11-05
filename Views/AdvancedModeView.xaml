@@ -2,10 +2,48 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="650"
         xmlns:controls="clr-namespace:Proggy.Controls"
+        xmlns:m="clr-namespace:Proggy.Models"
+        xmlns:infrastructure="clr-namespace:Proggy.Infrastructure"
+        xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
         x:Class="Proggy.Views.AdvancedModeView">
-  <DockPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-    <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
-  </DockPanel>
+  <Grid RowDefinitions="4*, Auto">
+    
+    <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      
+      <ItemsRepeater Items="{Binding Items}">
+        <ItemsRepeater.Layout>
+          <UniformGridLayout ItemsJustification="Start" MinRowSpacing="10" Orientation="Horizontal" MaximumRowsOrColumns="6"/>
+        </ItemsRepeater.Layout>
+        
+        <ItemsRepeater.ItemTemplate>
+          <infrastructure:TypedElementFactory>
+            <infrastructure:TypedElementFactory.Templates>
+              <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
+                <material:Card MinWidth="80" MinHeight="80">
+                  <Grid RowDefinitions="*, 2*">
+                    <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="{Binding BarInfo.Tempo}"></TextBlock>
+                    <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="24" Text="{Binding TimeSignature}"></TextBlock>
+                  </Grid>
+                </material:Card>
+              </DataTemplate>
+              <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
+                <material:Card MinWidth="80" MinHeight="80" Background="{DynamicResource PrimaryColor}">
+                  <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
+                </material:Card>
+              </DataTemplate>
+            </infrastructure:TypedElementFactory.Templates>
+          </infrastructure:TypedElementFactory>
+        
+        </ItemsRepeater.ItemTemplate>
+        
+      </ItemsRepeater>
+    </ScrollViewer>
+    
+    <material:Card Grid.Row="1" HorizontalAlignment="Center">
+      <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
+    </material:Card>
+    
+  </Grid>
 </UserControl>

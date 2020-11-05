@@ -1,21 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ReactiveUI;
 using Proggy.Infrastructure.Events;
 using Proggy.Infrastructure;
+using System.Reactive.Linq;
 
 namespace Proggy.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        public short WindowWidth => currentView is BasicModeViewModel ? basicSize.Item1 : advancedSize.Item1;
+        public short WindowHeight => currentView is BasicModeViewModel ? basicSize.Item2 : advancedSize.Item2;
+        public bool CanResize => currentView is BasicModeViewModel ? false : true;
+
         public ViewModelBase CurrentView 
         {
             get => currentView;
-            set => this.RaiseAndSetIfChanged(ref currentView, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref currentView, value);
+                this.RaisePropertyChanged(nameof(WindowWidth));
+                this.RaisePropertyChanged(nameof(WindowHeight));
+                this.RaisePropertyChanged(nameof(CanResize));
+            }
         }
 
         private ViewModelBase currentView;
+        private (short, short) basicSize = (350, 250);
+        private (short, short) advancedSize = (750, 650);
 
         public MainWindowViewModel()
         {

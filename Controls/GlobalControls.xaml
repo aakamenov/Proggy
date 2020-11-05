@@ -4,11 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
              x:Class="Proggy.Controls.GlobalControls">
-
-    <StackPanel Height="40" Margin="0 10 0 0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-        <DropDown Classes="dropdown" SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></DropDown>
-        <Button Classes="button" Content="{Binding PlayButtonText}" Command="{Binding Toggle}"></Button>
-        <Button Classes="button" Content="Settings" Command="{Binding Settings}"></Button>
-    </StackPanel>
+      <StackPanel Orientation="Horizontal">
+          <ComboBox Classes="dropdown" SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></ComboBox>
+          <Button Classes="button" Content="{Binding PlayButtonText}" Command="{Binding Toggle}"></Button>
+          <Button Classes="button" Content="Settings" Command="{Binding Settings}"></Button>
+      </StackPanel>
 
 </UserControl>
