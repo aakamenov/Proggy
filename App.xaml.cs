@@ -19,27 +19,24 @@ namespace Proggy
             paletteHelper = new PaletteHelper();
             paletteHelper.GetThemeManager().ThemeChanged += OnThemeChanged;
 
-            SetAddButtonGridItemColor(paletteHelper.GetTheme());
+            SetThemeColors(paletteHelper.GetTheme());
         }
 
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = new MainWindowViewModel(),
-                };
+                desktop.MainWindow = new MainWindow();
             }
 
             base.OnFrameworkInitializationCompleted();
         }
         private void OnThemeChanged(object sender, ThemeChangedEventArgs e)
         {
-            SetAddButtonGridItemColor(e.NewTheme);
+            SetThemeColors(e.NewTheme);
         }
 
-        private void SetAddButtonGridItemColor(ITheme theme)
+        private void SetThemeColors(ITheme theme)
         {
             var primaryColor = theme.GetBaseTheme() switch
             {

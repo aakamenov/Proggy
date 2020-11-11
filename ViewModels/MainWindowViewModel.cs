@@ -15,13 +15,7 @@ namespace Proggy.ViewModels
         public ViewModelBase CurrentView 
         {
             get => currentView;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref currentView, value);
-                this.RaisePropertyChanged(nameof(WindowWidth));
-                this.RaisePropertyChanged(nameof(WindowHeight));
-                this.RaisePropertyChanged(nameof(CanResize));
-            }
+            set => this.RaiseAndSetIfChanged(ref currentView, value);
         }
 
         private ViewModelBase currentView;
@@ -32,6 +26,13 @@ namespace Proggy.ViewModels
         {
             currentView = new BasicModeViewModel();
             MessageBus.Current.Listen<ModeChanged>().Subscribe(OnModeChanged);
+
+            this.WhenAnyValue(x => x.CurrentView).Subscribe(_ => 
+            {
+                this.RaisePropertyChanged(nameof(WindowWidth));
+                this.RaisePropertyChanged(nameof(WindowHeight));
+                this.RaisePropertyChanged(nameof(CanResize));
+            });
         }
 
         private void OnModeChanged(ModeChanged msg)

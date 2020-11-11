@@ -1,15 +1,13 @@
-﻿using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Proggy.ViewModels;
+﻿using Avalonia.Markup.Xaml;
+using Proggy.Controls;
 
 namespace Proggy.Views
 {
-    public class MainWindow : Window
+    public class TimeSignatureDialog : BaseWindow
     {
-        public MainWindow()
+        public TimeSignatureDialog() 
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
         }
 
         private void InitializeComponent()

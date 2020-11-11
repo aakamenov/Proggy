@@ -8,52 +8,20 @@ namespace Proggy.ViewModels
 {
     public class BasicModeViewModel : ViewModelBase
     {
-        const short MAX_BEATS = 17;
-        readonly short[] noteLengths = { 2, 4, 8, 16, 32 };
-
-        public short[] Beats => beats;
-        public short[] NoteLengths => noteLengths;
-
-        public short SelectedBeats 
-        {
-            get => selectedBeats;
-            set => this.RaiseAndSetIfChanged(ref selectedBeats, value);
-        }
-
-        public short SelectedNoteLength
-        {
-            get => selectedNoteLength;
-            set => this.RaiseAndSetIfChanged(ref selectedNoteLength, value);
-        }
-
-        public short TempoNumericBoxValue
-        {
-            get => tempoNumericBoxValue;
-            set => this.RaiseAndSetIfChanged(ref tempoNumericBoxValue, value);
-        }
-
         public GlobalControlsViewModel GlobalControls => globalControls;
-        private readonly GlobalControlsViewModel globalControls;
+        public TimeSignatureControlsViewModel TimeSignatureControls => timeSignatureControls;
 
-        private short tempoNumericBoxValue;
-        private short selectedNoteLength;
-        private short selectedBeats;
-        private short[] beats;
+        private readonly GlobalControlsViewModel globalControls;
+        private readonly TimeSignatureControlsViewModel timeSignatureControls;
 
         public BasicModeViewModel()
-        {
-            beats = new short[MAX_BEATS - 1];
-
-            for (short i = 2; i <= MAX_BEATS; i++)
-                beats[i - 2] = i;
-            
-            selectedBeats = 4;
-            selectedNoteLength = 4;
-            tempoNumericBoxValue = 120;
-            
+        {        
             globalControls = new GlobalControlsViewModel(new SinglePulseTrackBuilder(), MetronomeMode.Basic);
+            timeSignatureControls = new TimeSignatureControlsViewModel();
             
-            this.WhenAnyValue(x => x.SelectedBeats, x => x.SelectedNoteLength, x => x.TempoNumericBoxValue)
+            this.WhenAnyValue(x => x.TimeSignatureControls.SelectedBeats,
+                              x => x.TimeSignatureControls.SelectedNoteLength,
+                              x => x.TimeSignatureControls.TempoNumericBoxValue)
                 .Subscribe(x => SetTimeSignature(x.Item1, x.Item2, x.Item3));
         }
 

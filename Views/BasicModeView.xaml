@@ -8,14 +8,10 @@
              x:Class="Proggy.Views.BasicModeView">
     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
       <material:Card>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-          <ComboBox SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></ComboBox>
-          <ComboBox SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></ComboBox>
-          <NumericUpDown Value="{Binding TempoNumericBoxValue}" ClipValueToMinMax="True" Minimum="33" Maximum="300"/>
-        </StackPanel>
+        <controls:TimeSignatureControls DataContext="{Binding TimeSignatureControls}" />
       </material:Card>
       <material:Card>
-        <controls:GlobalControls DataContext="{Binding GlobalControls}"></controls:GlobalControls>
+        <controls:GlobalControls DataContext="{Binding GlobalControls}" />
       </material:Card>  
     </StackPanel>
 </UserControl>

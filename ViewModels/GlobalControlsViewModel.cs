@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
-using Proggy.Models;
 using ReactiveUI;
+using Proggy.ViewModels.CollectionItems;
 
 namespace Proggy.ViewModels
 {
     public class GlobalControlsViewModel : ViewModelBase
     {
-        public UiCollectionItem<MetronomeMode>[] Modes { get; }
-        public UiCollectionItem<MetronomeMode> SelectedMode
+        public ListItem<MetronomeMode>[] Modes { get; }
+        public ListItem<MetronomeMode> SelectedMode
         {
             get => selectedMode;
             set =>this.RaiseAndSetIfChanged(ref selectedMode, value);
@@ -30,15 +27,15 @@ namespace Proggy.ViewModels
         public IList<BarInfo> BarInfo => trackBuilder.BarInfo;
 
         private string playButtonText;
-        private UiCollectionItem<MetronomeMode> selectedMode;
+        private ListItem<MetronomeMode> selectedMode;
         private readonly IClickTrackBuilder trackBuilder;
 
         public GlobalControlsViewModel(IClickTrackBuilder trackBuilder, MetronomeMode selectedMode)
         {
-            Modes = new UiCollectionItem<MetronomeMode>[] 
+            Modes = new ListItem<MetronomeMode>[] 
             {
-                new UiCollectionItem<MetronomeMode>("Basic", MetronomeMode.Basic),
-                new UiCollectionItem<MetronomeMode>("Advanced", MetronomeMode.Advanced)
+                new ListItem<MetronomeMode>("Basic", MetronomeMode.Basic),
+                new ListItem<MetronomeMode>("Advanced", MetronomeMode.Advanced)
             };
             SelectedMode = Modes.First(x => selectedMode == x.Value);
 

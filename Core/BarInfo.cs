@@ -2,24 +2,49 @@
 {
     public class BarInfo
     {
-        public int Interval { get; }
         public short Beats { get; }
         public short NoteLength { get; }
         public short Tempo { get; }
+        public int Interval 
+        { 
+            get
+            {
+                if (!interval.HasValue)
+                    CalculateInterval();
+
+                return interval.Value;
+            }
+        }
+
+        private int? interval;
 
         public BarInfo(short tempo, short beats, short noteLength)
         {
             NoteLength = noteLength;
             Tempo = tempo;
             Beats = beats;
-            Interval = 60000 / tempo;
+        }
 
-            if(noteLength != 4)
+        public BarInfo DeepCopy()
+        {
+            var instance = new BarInfo(Tempo, Beats, NoteLength)
             {
-                if (noteLength > 4)
-                    Interval /= noteLength / 4;
+                interval = interval
+            };
+
+            return instance;
+        }
+
+        private void CalculateInterval()
+        {
+            interval = 60000 / Tempo;
+
+            if (NoteLength != 4)
+            {
+                if (NoteLength > 4)
+                    interval /= NoteLength / 4;
                 else
-                    Interval *= noteLength;
+                    interval *= NoteLength;
             }
         }
     }

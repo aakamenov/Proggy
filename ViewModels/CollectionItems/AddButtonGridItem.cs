@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Proggy.Models
+namespace Proggy.ViewModels.CollectionItems
 {
     public class AddButtonGridItem : ClickTrackGridItem
     {

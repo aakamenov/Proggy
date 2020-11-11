@@ -14,13 +14,31 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Remove="Controls\GlobalControls.xaml" />
+    <AvaloniaResource Remove="Controls\TimeSignatureControls.xaml" />
     <AvaloniaResource Remove="Views\AdvancedModeView.xaml" />
     <AvaloniaResource Remove="Views\BasicModeView.xaml" />
+    <AvaloniaResource Remove="Views\TimeSignatureDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaXaml Remove="Views\MainWindow.axaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Controls\TimeSignatureControls.xaml" />
+    <None Remove="Views\TimeSignatureDialog.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaXaml Include="Controls\TimeSignatureControls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Include="Views\TimeSignatureDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.0-preview5" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.0-preview5" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0-preview5" />
+    <PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.0-preview5" />
     <PackageReference Include="Material.Avalonia" Version="0.10.3" />
     <PackageReference Include="NAudio" Version="1.10.0" />
   </ItemGroup>
@@ -34,5 +52,13 @@
     <EmbeddedResource Include="Views\AdvancedModeView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Controls\TimeSignatureControls.xaml.cs">
+      <DependentUpon>TimeSignatureControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\TimeSignatureDialog.xaml.cs">
+      <DependentUpon>TimeSignatureDialog.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
