@@ -27,8 +27,8 @@ namespace Proggy.ViewModels
 
         private void SetTimeSignature(short beats, short noteLength, short tempo)
         {
-            globalControls.BarInfo.Clear();
-            globalControls.BarInfo.Add(new BarInfo(tempo, beats, noteLength));
+            globalControls.ClickTrack.Clear();
+            globalControls.ClickTrack.Add(new BarInfo(tempo, beats, noteLength));
         }
     }
 }

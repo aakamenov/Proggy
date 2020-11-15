@@ -11,6 +11,17 @@ namespace Proggy.ViewModels
 {
     public class GlobalControlsViewModel : ViewModelBase
     {
+        public bool Loop
+        {
+            get => loop;
+            set => this.RaiseAndSetIfChanged(ref loop, value);
+        }
+        public bool Precount
+        {
+            get => precount;
+            set => this.RaiseAndSetIfChanged(ref precount, value);
+        }
+
         public ListItem<MetronomeMode>[] Modes { get; }
         public ListItem<MetronomeMode> SelectedMode
         {
@@ -24,13 +35,16 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref playButtonText, value);
         }
 
-        public IList<BarInfo> BarInfo => trackBuilder.BarInfo;
+        public IList<BarInfo> ClickTrack => clickTrack;
 
         private string playButtonText;
+        private bool loop;
+        private bool precount;
+        private List<BarInfo> clickTrack;
         private ListItem<MetronomeMode> selectedMode;
-        private readonly IClickTrackBuilder trackBuilder;
+        private readonly ClickTrackBuilder trackBuilder;
 
-        public GlobalControlsViewModel(IClickTrackBuilder trackBuilder, MetronomeMode selectedMode)
+        public GlobalControlsViewModel(ClickTrackBuilder trackBuilder, MetronomeMode selectedMode)
         {
             Modes = new ListItem<MetronomeMode>[] 
             {
@@ -39,11 +53,15 @@ namespace Proggy.ViewModels
             };
             SelectedMode = Modes.First(x => selectedMode == x.Value);
 
+            clickTrack = new List<BarInfo>();
+
             this.trackBuilder = trackBuilder;
             playButtonText = "Play";
 
             this.ObservableForProperty(x => x.SelectedMode)
                 .Subscribe(x => MessageBus.Current.SendMessage(new ModeChanged(x.Value.Value)));
+
+            AudioPlayer.Instance.PlaybackStopped += OnPlaybackStopped;
         }
 
         public void Toggle()
@@ -55,7 +73,7 @@ namespace Proggy.ViewModels
             }
             else
             {
-                AudioPlayer.Instance.PlaySound(trackBuilder.Build());
+                AudioPlayer.Instance.PlaySound(trackBuilder.Build(clickTrack, precount, loop));
                 PlayButtonText = "Stop";
             }
         }
@@ -63,6 +81,16 @@ namespace Proggy.ViewModels
         public void Settings()
         {
             
+        }
+
+        private void OnPlaybackStopped(object sender, EventArgs e)
+        {
+            PlayButtonText = "Play";
+        }
+
+        ~GlobalControlsViewModel()
+        {
+            AudioPlayer.Instance.PlaybackStopped -= OnPlaybackStopped;
         }
     }
 }

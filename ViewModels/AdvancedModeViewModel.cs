@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Avalonia;
 using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.ViewModels.CollectionItems;
-using Proggy.Views;
 using ReactiveUI;
 
 namespace Proggy.ViewModels
@@ -19,11 +17,14 @@ namespace Proggy.ViewModels
 
         public AdvancedModeViewModel()
         {
-            globalControls = new GlobalControlsViewModel(new SinglePulseTrackBuilder(), MetronomeMode.Advanced);
-            globalControls.BarInfo.Add(new BarInfo(120, 4, 4));
-
+            globalControls = new GlobalControlsViewModel(new MultiPulseTrackBuilder(), MetronomeMode.Advanced)
+            {
+                Loop = true
+            };
+            globalControls.ClickTrack.Add(new BarInfo(120, 4, 4));
+            
             Items = new ObservableCollection<ClickTrackGridItem>();
-            Items.Add(new BarInfoGridItem(globalControls.BarInfo.First()));           
+            Items.Add(new BarInfoGridItem(globalControls.ClickTrack.First()));           
             Items.Add(new AddButtonGridItem());
         }
 
@@ -32,10 +33,10 @@ namespace Proggy.ViewModels
             //Add button pressed
             if(item is null)
             {
-                var lastItem = globalControls.BarInfo.Last();
+                var lastItem = globalControls.ClickTrack.Last();
 
                 var info = lastItem.DeepCopy();
-                globalControls.BarInfo.Add(info);
+                globalControls.ClickTrack.Add(info);
                 Items.Insert(Items.Count - 1, new BarInfoGridItem(info));
             }
             else
@@ -47,11 +48,20 @@ namespace Proggy.ViewModels
 
                 if (result.WasClosedFromView)
                 {
-                    var index = globalControls.BarInfo.IndexOf(item.BarInfo);
-                    globalControls.BarInfo[index] = result.BarInfo;
+                    var index = globalControls.ClickTrack.IndexOf(item.BarInfo);
+                    globalControls.ClickTrack[index] = result.BarInfo;
 
                     item.BarInfo = result.BarInfo;
                 }
+            }
+        }
+
+        public void DeleteItem(BarInfoGridItem item)
+        {
+            if (Items.Count > 2)
+            {
+                Items.Remove(item);
+                globalControls.ClickTrack.Remove(item.BarInfo);
             }
         }
     }

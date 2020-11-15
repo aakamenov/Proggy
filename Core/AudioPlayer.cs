@@ -8,6 +8,8 @@ namespace Proggy.Core
     {
         public static AudioPlayer Instance => instance;
 
+        public event EventHandler PlaybackStopped;
+
         public bool IsPlaying => outputDevice.PlaybackState == PlaybackState.Playing;
 
         public float Volume
@@ -36,6 +38,7 @@ namespace Proggy.Core
             outputDevice = new WaveOutEvent();
 
             mixer = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, channelCount));
+            mixer.MixerInputEnded += OnMixerInputEnded;
 
             outputDevice.Init(mixer);
         }
@@ -76,6 +79,11 @@ namespace Proggy.Core
                 return new MonoToStereoSampleProvider(input);
 
             throw new NotImplementedException("Channel count is more that 2");
+        }
+
+        private void OnMixerInputEnded(object sender, SampleProviderEventArgs e)
+        {
+            PlaybackStopped?.Invoke(this, EventArgs.Empty);
         }
     }
 }
