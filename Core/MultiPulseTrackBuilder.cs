@@ -11,7 +11,7 @@ namespace Proggy.Core
             var providers = new List<ISampleProvider>();
 
             foreach (var info in infos)
-                providers.Add(BuildSinglePulse(info));
+                providers.Add(CachedSound.FromSampleProvider(BuildSinglePulse(info)));
 
             var track = new ConcatenatingSampleProvider(providers);
 

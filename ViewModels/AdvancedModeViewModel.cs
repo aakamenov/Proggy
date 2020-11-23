@@ -4,7 +4,6 @@ using System.Linq;
 using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.ViewModels.CollectionItems;
-using ReactiveUI;
 
 namespace Proggy.ViewModels
 {
@@ -22,10 +21,12 @@ namespace Proggy.ViewModels
                 Loop = true
             };
             globalControls.ClickTrack.Add(new BarInfo(120, 4, 4));
-            
-            Items = new ObservableCollection<ClickTrackGridItem>();
-            Items.Add(new BarInfoGridItem(globalControls.ClickTrack.First()));           
-            Items.Add(new AddButtonGridItem());
+
+            Items = new ObservableCollection<ClickTrackGridItem>
+            {
+                new BarInfoGridItem(globalControls.ClickTrack.First()),
+                new AddButtonGridItem()
+            };
         }
 
         public async void OnItemClicked(BarInfoGridItem item)
