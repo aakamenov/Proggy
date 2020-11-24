@@ -7,7 +7,7 @@
   
   <StackPanel Orientation="Horizontal">
       <ComboBox Classes="dropdown" SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></ComboBox>
-      <Button Classes="button" Content="{Binding PlayButtonText}" Command="{Binding Toggle}"></Button>
+      <Button Classes="button" IsEnabled="{Binding CanPlay}" Content="{Binding PlayButtonText}" Command="{Binding Toggle}"></Button>
       <Button Classes="button" Content="Settings" Command="{Binding Settings}"></Button>
   </StackPanel>
 

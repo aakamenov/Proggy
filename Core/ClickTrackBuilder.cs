@@ -1,17 +1,54 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
 namespace Proggy.Core
 {
-    public abstract class ClickTrackBuilder
+    public static class ClickTrackBuilder
     {
-        protected const int SoundDurationMs = 10;
+        private const int SoundDurationMs = 10;
+        public static ISampleProvider BuildSinglePulse(BarInfo info)
+        {
+            var track = BuildBar(info);
+            return new LoopingSampleProvider(CachedSound.FromSampleProvider(track));
+        }
 
-        public abstract ISampleProvider Build(IList<BarInfo> infos, bool precount, bool loop);
+        public static async Task<ISampleProvider> BuildClickTrackAsync(IList<BarInfo> infos, bool precount, bool loop)
+        {
+            return await Task.Run(() => 
+            {
+                var providers = new ISampleProvider[infos.Count];
 
-        protected ISampleProvider BuildSinglePulse(BarInfo info)
+                for (var i = 0; i < infos.Count; i++)
+                    providers[i] = CachedSound.FromSampleProvider(BuildBar(infos[i]));
+
+                var track = new ConcatenatingSampleProvider(providers);
+
+                ISampleProvider precountMeasure = null;
+
+                if (precount)
+                    precountMeasure = BuildBar(new BarInfo(infos[0].Tempo, 4, 4));
+
+                if (loop)
+                {
+                    if (precountMeasure is null)
+                        return new LoopingSampleProvider(CachedSound.FromSampleProvider(track));
+                    else
+                        return precountMeasure.FollowedBy(new LoopingSampleProvider(CachedSound.FromSampleProvider(track)));
+                }
+                else
+                {
+                    if (precountMeasure is null)
+                        return track;
+                    else
+                        return precountMeasure.FollowedBy(track);
+                }
+            });
+        }
+
+        private static ISampleProvider BuildBar(BarInfo info)
         {
             var providers = new ISampleProvider[info.Beats];
 

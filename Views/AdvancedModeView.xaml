@@ -10,8 +10,8 @@
         x:Class="Proggy.Views.AdvancedModeView">
   <Grid RowDefinitions="Auto, 4*, Auto">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-      <ToggleSwitch IsChecked="{Binding GlobalControls.Precount}" Margin="0,5,10,5">Precount</ToggleSwitch>
-      <ToggleSwitch IsChecked="{Binding GlobalControls.Loop}" Margin="0,5,10,5">Loop</ToggleSwitch>
+      <ToggleSwitch IsChecked="{Binding Precount}" Margin="0,5,10,5">Precount</ToggleSwitch>
+      <ToggleSwitch IsChecked="{Binding Loop}" Margin="0,5,10,5">Loop</ToggleSwitch>
     </StackPanel>
     
     <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">

@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.ViewModels.CollectionItems;
+using ReactiveUI;
+using NAudio.Wave;
 
 namespace Proggy.ViewModels
 {
@@ -11,22 +13,34 @@ namespace Proggy.ViewModels
     {
         public ObservableCollection<ClickTrackGridItem> Items { get; }
 
+        public bool Loop
+        {
+            get => loop;
+            set => this.RaiseAndSetIfChanged(ref loop, value);
+        }
+        public bool Precount
+        {
+            get => precount;
+            set => this.RaiseAndSetIfChanged(ref precount, value);
+        }
+
         public GlobalControlsViewModel GlobalControls => globalControls;
+
         private readonly GlobalControlsViewModel globalControls;
+        private bool loop;
+        private bool precount;
 
         public AdvancedModeViewModel()
         {
-            globalControls = new GlobalControlsViewModel(new MultiPulseTrackBuilder(), MetronomeMode.Advanced)
-            {
-                Loop = true
-            };
-            globalControls.ClickTrack.Add(new BarInfo(120, 4, 4));
+            globalControls = new GlobalControlsViewModel(BuildClickTrackAsync, MetronomeMode.Advanced);
 
             Items = new ObservableCollection<ClickTrackGridItem>
             {
-                new BarInfoGridItem(globalControls.ClickTrack.First()),
+                new BarInfoGridItem(new BarInfo(120, 4, 4)),
                 new AddButtonGridItem()
             };
+
+            Loop = true;
         }
 
         public async void OnItemClicked(BarInfoGridItem item)
@@ -34,11 +48,8 @@ namespace Proggy.ViewModels
             //Add button pressed
             if(item is null)
             {
-                var lastItem = globalControls.ClickTrack.Last();
-
-                var info = lastItem.DeepCopy();
-                globalControls.ClickTrack.Add(info);
-                Items.Insert(Items.Count - 1, new BarInfoGridItem(info));
+                var lastItem = (BarInfoGridItem)Items[Items.Count - 2];
+                Items.Insert(Items.Count - 1, new BarInfoGridItem(lastItem.BarInfo));
             }
             else
             {
@@ -48,22 +59,20 @@ namespace Proggy.ViewModels
                 });
 
                 if (result.WasClosedFromView)
-                {
-                    var index = globalControls.ClickTrack.IndexOf(item.BarInfo);
-                    globalControls.ClickTrack[index] = result.BarInfo;
-
                     item.BarInfo = result.BarInfo;
-                }
             }
         }
 
         public void DeleteItem(BarInfoGridItem item)
         {
             if (Items.Count > 2)
-            {
                 Items.Remove(item);
-                globalControls.ClickTrack.Remove(item.BarInfo);
-            }
+        }
+
+        private async Task<ISampleProvider> BuildClickTrackAsync()
+        {
+            var infos = Items.Take(Items.Count - 1).Cast<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
+            return await ClickTrackBuilder.BuildClickTrackAsync(infos, precount, loop);
         }
     }
 }

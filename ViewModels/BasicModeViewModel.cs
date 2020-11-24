@@ -1,8 +1,7 @@
-﻿using System;
-using System.Reactive.Linq;
+﻿using System.Threading.Tasks;
 using Proggy.Core;
 using Proggy.Infrastructure;
-using ReactiveUI;
+using NAudio.Wave;
 
 namespace Proggy.ViewModels
 {
@@ -16,19 +15,20 @@ namespace Proggy.ViewModels
 
         public BasicModeViewModel()
         {        
-            globalControls = new GlobalControlsViewModel(new SinglePulseTrackBuilder(), MetronomeMode.Basic);
+            globalControls = new GlobalControlsViewModel(BuildPulse, MetronomeMode.Basic);
             timeSignatureControls = new TimeSignatureControlsViewModel();
-            
-            this.WhenAnyValue(x => x.TimeSignatureControls.SelectedBeats,
-                              x => x.TimeSignatureControls.SelectedNoteLength,
-                              x => x.TimeSignatureControls.TempoNumericBoxValue)
-                .Subscribe(x => SetTimeSignature(x.Item1, x.Item2, x.Item3));
+           
         }
 
-        private void SetTimeSignature(short beats, short noteLength, short tempo)
+        private Task<ISampleProvider> BuildPulse()
         {
-            globalControls.ClickTrack.Clear();
-            globalControls.ClickTrack.Add(new BarInfo(tempo, beats, noteLength));
+            var pulse = ClickTrackBuilder.BuildSinglePulse(
+                new BarInfo(TimeSignatureControls.TempoNumericBoxValue,
+                            TimeSignatureControls.SelectedBeats,
+                            TimeSignatureControls.SelectedNoteLength)
+            );
+
+            return Task.FromResult(pulse);
         }
     }
 }
