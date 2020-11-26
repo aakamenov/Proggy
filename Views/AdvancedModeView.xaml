@@ -27,7 +27,7 @@
             <infrastructure:TypedElementFactory.Templates>
               
               <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
-                <material:Card>
+                <material:Card Background="{Binding BackgroundColor}">
                   <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" CommandParameter="{Binding}" MinWidth="80" MinHeight="80">
                     <Button.ContextMenu>
                       <ContextMenu>

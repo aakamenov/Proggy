@@ -61,12 +61,15 @@ namespace Proggy.ViewModels
             if (AudioPlayer.Instance.IsPlaying)
             {
                 AudioPlayer.Instance.Stop();
+
+                MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
                 PlayButtonText = "Play";
             }
             else
             {
                 CanPlay = false;
                 AudioPlayer.Instance.PlaySound(await buildClickTrack());
+                MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Playing));
                 CanPlay = true;
 
                 PlayButtonText = "Stop";
@@ -80,6 +83,8 @@ namespace Proggy.ViewModels
 
         private void OnPlaybackStopped(object sender, EventArgs e)
         {
+            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
+
             PlayButtonText = "Play";
         }
 
