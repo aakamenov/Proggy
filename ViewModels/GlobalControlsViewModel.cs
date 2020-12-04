@@ -25,6 +25,14 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref canPlay, value);
         }
 
+        public float Volume
+        {
+            get => volume;
+            set => this.RaiseAndSetIfChanged(ref volume, value);
+        }
+
+        public string VolumeText => Math.Round(volume * 100).ToString();
+
         public string PlayButtonText
         {
             get => playButtonText;
@@ -32,6 +40,7 @@ namespace Proggy.ViewModels
         }
 
         private string playButtonText;
+        private float volume;
         private bool canPlay;
         private ListItem<MetronomeMode> selectedMode;
         private readonly Func<Task<ISampleProvider>> buildClickTrack;
@@ -49,9 +58,21 @@ namespace Proggy.ViewModels
 
             playButtonText = "Play";
             canPlay = true;
+            volume = AudioPlayer.Instance.Volume;
 
             this.ObservableForProperty(x => x.SelectedMode)
-                .Subscribe(x => MessageBus.Current.SendMessage(new ModeChanged(x.Value.Value)));
+                .Subscribe(x => 
+                {
+                    Stop();
+                    MessageBus.Current.SendMessage(new ModeChanged(x.Value.Value)); 
+                });
+
+            this.WhenAnyValue(x => x.Volume)
+                .Subscribe(x => 
+                {
+                    AudioPlayer.Instance.Volume = x;
+                    this.RaisePropertyChanged(nameof(VolumeText)); 
+                });
 
             AudioPlayer.Instance.PlaybackStopped += OnPlaybackStopped;
         }
@@ -60,18 +81,12 @@ namespace Proggy.ViewModels
         {
             if (AudioPlayer.Instance.IsPlaying)
             {
-                AudioPlayer.Instance.Stop();
-
-                MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
+                Stop();
                 PlayButtonText = "Play";
             }
             else
             {
-                CanPlay = false;
-                AudioPlayer.Instance.PlaySound(await buildClickTrack());
-                MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Playing));
-                CanPlay = true;
-
+                await Play();
                 PlayButtonText = "Stop";
             }
         }
@@ -81,10 +96,23 @@ namespace Proggy.ViewModels
             
         }
 
+        private async Task Play()
+        {
+            CanPlay = false;
+            AudioPlayer.Instance.PlaySound(await buildClickTrack());
+            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Playing));
+            CanPlay = true;
+        }
+
+        private void Stop()
+        {
+            AudioPlayer.Instance.Stop();
+            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
+        }
+
         private void OnPlaybackStopped(object sender, EventArgs e)
         {
             MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
-
             PlayButtonText = "Play";
         }
 

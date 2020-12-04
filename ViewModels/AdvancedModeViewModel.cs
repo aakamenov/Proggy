@@ -2,14 +2,12 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Reactive.Linq;
 using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
 using Proggy.ViewModels.CollectionItems;
 using ReactiveUI;
-using Avalonia.Threading;
 using NAudio.Wave;
 
 namespace Proggy.ViewModels
@@ -36,12 +34,9 @@ namespace Proggy.ViewModels
         private readonly GlobalControlsViewModel globalControls;
         private bool loop;
         private bool precount;
-
-        private DispatcherTimer timer;
-        private Stopwatch stopwatch;
-        private long lastUpdate;
-        private int currentInterval;
         private int currentItemIndex;
+
+        private AccurateTimer timer;
 
         public AdvancedModeViewModel()
         {
@@ -57,10 +52,7 @@ namespace Proggy.ViewModels
 
             MessageBus.Current.Listen<MetronomePlaybackStateChanged>().Subscribe(OnMetronomePlaybackStateChanged);
 
-            timer = new DispatcherTimer();
-            timer.Tick += OnTimerElapsed;
-
-            stopwatch = new Stopwatch();
+            timer = new AccurateTimer(UpdateCurrentBar);
         }
 
         public async void OnItemClicked(BarInfoGridItem item)
@@ -102,29 +94,27 @@ namespace Proggy.ViewModels
                 if (Items.Count == 2)
                     return;
 
-                currentInterval = precount ? 2000 /*4/4 120BPM*/ : 0;
                 currentItemIndex = 0;
 
-                stopwatch.Start();
+                if(precount)
+                {
+                    var first = (BarInfoGridItem)Items.First();
+                    timer.Interval = new BarInfo(first.BarInfo.Tempo, 4, 4).Interval * 4;
+                }
+                else
+                    timer.Interval = 0;
 
-                timer.Interval = TimeSpan.FromMilliseconds(TimerIntervalMs);
                 timer.Start();
             }
             else
             {
-                stopwatch.Stop();
                 timer.Stop();
                 DeselectAll();
             }
         }
 
-        private void OnTimerElapsed(object sender, EventArgs e)
+        private void UpdateCurrentBar()
         {
-            if (!(stopwatch.ElapsedMilliseconds - lastUpdate >= currentInterval - TimerIntervalMs))
-                return;
-            Debug.WriteLine($"Update: {stopwatch.ElapsedMilliseconds - lastUpdate} ms");
-            lastUpdate = stopwatch.ElapsedMilliseconds;
-            
             var current = (BarInfoGridItem)Items[currentItemIndex];
             current.IsSelected = true;
 
@@ -144,7 +134,7 @@ namespace Proggy.ViewModels
             else
                 currentItemIndex++;
 
-            currentInterval = current.BarInfo.Interval * current.BarInfo.Beats;
+            timer.Interval = current.BarInfo.Interval * current.BarInfo.Beats;
         }
 
         private void DeselectAll()

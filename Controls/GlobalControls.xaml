@@ -4,11 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
              x:Class="Proggy.Controls.GlobalControls">
-  
-  <StackPanel Orientation="Horizontal">
-      <ComboBox Classes="dropdown" SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></ComboBox>
-      <Button Classes="button" IsEnabled="{Binding CanPlay}" Content="{Binding PlayButtonText}" Command="{Binding Toggle}"></Button>
-      <Button Classes="button" Content="Settings" Command="{Binding Settings}"></Button>
+  <StackPanel Orientation="Vertical">
+    <StackPanel Orientation="Horizontal">
+      <ComboBox SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></ComboBox>
+      <Button IsEnabled="{Binding CanPlay}" Content="{Binding PlayButtonText}" Command="{Binding Toggle}"></Button>
+      <Button Content="Settings" Command="{Binding Settings}"></Button>
+    </StackPanel>
+    <Grid ColumnDefinitions="1*, 2.5*, 1*">
+      <TextBlock HorizontalAlignment="Center" Grid.Column="0">Volume: </TextBlock>
+      <Slider Grid.Column="1" Minimum="0" Maximum="1.0" TickFrequency="0.01" IsSnapToTickEnabled="True" Value="{Binding Volume}"></Slider>
+      <TextBlock Grid.Column="2" HorizontalAlignment="Center" Text="{Binding VolumeText}"></TextBlock>
+    </Grid>
   </StackPanel>
 
 </UserControl>

@@ -58,7 +58,7 @@ namespace Proggy.Core
             {
                 var click = new SignalGenerator()
                 {
-                    Gain = 0.2,
+                    Gain = 1,
                     Frequency = i > 0 ? 2000 : 4000,
                     Type = SignalGeneratorType.Sin
                 }.Take(TimeSpan.FromMilliseconds(SoundDurationMs));
