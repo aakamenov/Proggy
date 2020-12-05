@@ -4,11 +4,11 @@ using Proggy.Infrastructure;
 
 namespace Proggy.Controls
 {
-    public class BaseWindow : Window
+    public class DialogWindow : Window
     {
-        public BaseWindow()
+        public DialogWindow()
         {
-            DataContextChanged += OnDataContextChanged;
+            DataContextChanged += OnDataContextChanged;          
         }
 
         private void OnDataContextChanged(object sender, EventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Proggy.Core;
+using Proggy.Models;
 using Proggy.Infrastructure;
 using NAudio.Wave;
 
@@ -20,15 +21,18 @@ namespace Proggy.ViewModels
            
         }
 
-        private Task<ISampleProvider> BuildPulse()
+        private async Task<ISampleProvider> BuildPulse()
         {
+            var settings = await UserSettings.Get();
+
             var pulse = ClickTrackBuilder.BuildSinglePulse(
                 new BarInfo(TimeSignatureControls.TempoNumericBoxValue,
                             TimeSignatureControls.SelectedBeats,
-                            TimeSignatureControls.SelectedNoteLength)
+                            TimeSignatureControls.SelectedNoteLength),
+                settings.ClickSettings
             );
 
-            return Task.FromResult(pulse);
+            return pulse;
         }
     }
 }

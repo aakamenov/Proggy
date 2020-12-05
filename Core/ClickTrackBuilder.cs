@@ -8,28 +8,32 @@ namespace Proggy.Core
 {
     public static class ClickTrackBuilder
     {
-        private const int SoundDurationMs = 10;
-        public static ISampleProvider BuildSinglePulse(BarInfo info)
+        public const int SoundDurationMs = 20;
+        public static ISampleProvider BuildSinglePulse(BarInfo info, ClickSettings settings)
         {
-            var track = BuildBar(info);
+            var track = BuildBar(info, settings);
             return new LoopingSampleProvider(CachedSound.FromSampleProvider(track));
         }
 
-        public static async Task<ISampleProvider> BuildClickTrackAsync(IList<BarInfo> infos, bool precount, bool loop)
+        public static async Task<ISampleProvider> BuildClickTrackAsync(
+            IList<BarInfo> infos,
+            ClickSettings settings,
+            bool precount,
+            bool loop)
         {
             return await Task.Run(() => 
             {
                 var providers = new ISampleProvider[infos.Count];
 
                 for (var i = 0; i < infos.Count; i++)
-                    providers[i] = CachedSound.FromSampleProvider(BuildBar(infos[i]));
+                    providers[i] = CachedSound.FromSampleProvider(BuildBar(infos[i], settings));
 
                 var track = new ConcatenatingSampleProvider(providers);
 
                 ISampleProvider precountMeasure = null;
 
                 if (precount)
-                    precountMeasure = BuildBar(new BarInfo(infos[0].Tempo, 4, 4));
+                    precountMeasure = BuildBar(new BarInfo(infos[0].Tempo, 4, 4), settings);
 
                 if (loop)
                 {
@@ -48,7 +52,7 @@ namespace Proggy.Core
             });
         }
 
-        private static ISampleProvider BuildBar(BarInfo info)
+        private static ISampleProvider BuildBar(BarInfo info, ClickSettings settings)
         {
             var providers = new ISampleProvider[info.Beats];
 
@@ -59,8 +63,8 @@ namespace Proggy.Core
                 var click = new SignalGenerator()
                 {
                     Gain = 1,
-                    Frequency = i > 0 ? 2000 : 4000,
-                    Type = SignalGeneratorType.Sin
+                    Frequency = i > 0 ? settings.ClickFreq : settings.AccentClickFreq,
+                    Type = settings.WaveType
                 }.Take(TimeSpan.FromMilliseconds(SoundDurationMs));
 
                 providers[i] = new OffsetSampleProvider(click)

@@ -1,0 +1,53 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
+        mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="500"
+        x:Class="Proggy.Views.SettingsDialog"
+        Height="500"
+        Width="460"
+        Title="Settings">
+
+  <Window.Resources>
+    <Thickness x:Key="DescMargin">0,10,5,0</Thickness>
+    <Thickness x:Key="WidgetMargin">0,10,0,0</Thickness>
+  </Window.Resources>
+
+  <TabControl>
+    <TabItem Header="General">
+      <ScrollViewer>
+        <StackPanel Margin="10,10,10,10">
+          <TextBlock Classes="title">Click Sound</TextBlock>
+          <material:Card>
+            <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 2*">
+              <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Wave type:</TextBlock>
+              <ComboBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Items="{Binding WaveTypes}" SelectedItem="{Binding SelectedWaveType}"/>
+
+              <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Accent click frequency:</TextBlock>
+              <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="1" Grid.Column="1" ColumnDefinitions="3*, 1*">
+                <Slider Grid.Column="0" Minimum="1000" Maximum="10000" TickFrequency="1" Value="{Binding AccentClickFreq}" />
+                <TextBlock Grid.Column="1" Text="{Binding AccentClickFreqText}" />
+              </Grid>
+
+              <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Click frequency:</TextBlock>
+              <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="2" Grid.Column="1" ColumnDefinitions="3*, 1*">
+                <Slider Grid.Column="0" Minimum="1000" Maximum="10000" TickFrequency="1" Value="{Binding ClickFreq}" />
+                <TextBlock Grid.Column="1" Text="{Binding ClickFreqText}" />
+              </Grid>
+
+              <Grid Margin="{StaticResource WidgetMargin}" ColumnDefinitions="1*, 1*" Grid.Row="3" Grid.ColumnSpan="2">
+                <Button Grid.Column="0" Content="Test Accent Click" Command="{Binding TestAccentClick}" />
+                <Button Grid.Column="1" Content="Test Click" Command="{Binding TestClick}" />
+              </Grid>
+              
+            </Grid>
+          </material:Card>       
+        </StackPanel>
+      </ScrollViewer>
+    </TabItem>
+    <TabItem Header="Basic Mode">Basic Mode</TabItem>
+    <TabItem Header="Advanced Mode">Advanced Mode</TabItem>
+  </TabControl>
+  
+</Window>

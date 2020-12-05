@@ -3,7 +3,7 @@ using Proggy.Controls;
 
 namespace Proggy.Views
 {
-    public class TimeSignatureDialog : BaseWindow
+    public class TimeSignatureDialog : DialogWindow
     {
         public TimeSignatureDialog() 
         {

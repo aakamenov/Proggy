@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Proggy.Controls;
 using Proggy.ViewModels;
 
 namespace Proggy.Infrastructure
 {
     public static class WindowNavigation
     {
-        public static async Task<TViewModel> NavigateAsync<TViewModel>(Func<TViewModel> builder) where TViewModel : ViewModelBase
+        public static async Task<TViewModel> ShowDialogAsync<TViewModel>(Func<TViewModel> builder) where TViewModel : ViewModelBase
         {
             var vm = builder();
 

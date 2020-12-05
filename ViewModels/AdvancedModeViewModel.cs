@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
 using Proggy.Core;
+using Proggy.Models;
 using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
 using Proggy.ViewModels.CollectionItems;
@@ -14,8 +15,6 @@ namespace Proggy.ViewModels
 {
     public class AdvancedModeViewModel : ViewModelBase
     {
-        private const int TimerIntervalMs = 10;
-
         public ObservableCollection<ClickTrackGridItem> Items { get; }
 
         public bool Loop
@@ -65,7 +64,7 @@ namespace Proggy.ViewModels
             }
             else
             {
-                var result = await WindowNavigation.NavigateAsync(() => 
+                var result = await WindowNavigation.ShowDialogAsync(() => 
                 {
                     return new TimeSignatureDialogViewModel(item.BarInfo.DeepCopy());
                 });
@@ -84,7 +83,9 @@ namespace Proggy.ViewModels
         private async Task<ISampleProvider> BuildClickTrackAsync()
         {
             var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
-            return await ClickTrackBuilder.BuildClickTrackAsync(infos, precount, loop);
+            var settings = await UserSettings.Get();
+
+            return await ClickTrackBuilder.BuildClickTrackAsync(infos, settings.ClickSettings, precount, loop);
         }
 
         private void OnMetronomePlaybackStateChanged(MetronomePlaybackStateChanged msg)

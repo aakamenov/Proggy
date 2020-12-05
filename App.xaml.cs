@@ -1,10 +1,10 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Proggy.ViewModels;
 using Proggy.Views;
 using Material.Styles.Themes;
 using Material.Styles.Themes.Base;
+using Akavache;
 
 namespace Proggy
 {
@@ -14,6 +14,8 @@ namespace Proggy
 
         public override void Initialize()
         {
+            BlobCache.ApplicationName = "Proggy";
+
             AvaloniaXamlLoader.Load(this);
 
             paletteHelper = new PaletteHelper();

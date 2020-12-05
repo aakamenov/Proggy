@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
+using Proggy.Models;
 using ReactiveUI;
 using Proggy.ViewModels.CollectionItems;
 using NAudio.Wave;
@@ -80,20 +81,19 @@ namespace Proggy.ViewModels
         public async void Toggle()
         {
             if (AudioPlayer.Instance.IsPlaying)
-            {
                 Stop();
-                PlayButtonText = "Play";
-            }
             else
-            {
                 await Play();
-                PlayButtonText = "Stop";
-            }
         }
 
-        public void Settings()
+        public async void Settings()
         {
-            
+            Stop();
+
+            var settings = await UserSettings.Get();
+            var result = await WindowNavigation.ShowDialogAsync(() => new SettingsDialogViewModel(settings));
+
+            await result.UserSettings.Save();
         }
 
         private async Task Play()
@@ -102,12 +102,16 @@ namespace Proggy.ViewModels
             AudioPlayer.Instance.PlaySound(await buildClickTrack());
             MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Playing));
             CanPlay = true;
+
+            PlayButtonText = "Stop";
         }
 
         private void Stop()
         {
             AudioPlayer.Instance.Stop();
             MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
+
+            PlayButtonText = "Play";
         }
 
         private void OnPlaybackStopped(object sender, EventArgs e)
