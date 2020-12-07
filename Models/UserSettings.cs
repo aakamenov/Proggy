@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using NAudio.Wave.SampleProviders;
@@ -22,7 +21,9 @@ namespace Proggy.Models
             {
                 WaveType = SignalGeneratorType.Sin,
                 AccentClickFreq = 4000,
-                ClickFreq = 2000
+                ClickFreq = 2000,
+                PrecountBarBeats = 4,
+                PrecountBarNoteLength = 4
             };
 
             Theme = new PaletteHelper().GetTheme();

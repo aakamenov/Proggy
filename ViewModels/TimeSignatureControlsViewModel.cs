@@ -7,7 +7,7 @@ namespace Proggy.ViewModels
 {
     public class TimeSignatureControlsViewModel : ViewModelBase
     {
-        const short MAX_BEATS = 17;
+        const short MAX_BEATS = 32;
         readonly short[] noteLengths = { 2, 4, 8, 16, 32 };
 
         public short[] Beats => beats;

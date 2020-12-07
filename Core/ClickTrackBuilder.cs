@@ -33,7 +33,13 @@ namespace Proggy.Core
                 ISampleProvider precountMeasure = null;
 
                 if (precount)
-                    precountMeasure = BuildBar(new BarInfo(infos[0].Tempo, 4, 4), settings);
+                {
+                    precountMeasure = BuildBar(
+                        new BarInfo(infos[0].Tempo,
+                                    settings.PrecountBarBeats,
+                                    settings.PrecountBarNoteLength),
+                        settings);
+                }
 
                 if (loop)
                 {

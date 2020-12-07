@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Linq;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -61,7 +60,11 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref secondaryColor, value);
         }
 
+        public TimeSignatureControlsViewModel TimeSignatureControls => timeSignatureControls;
+
+        private readonly TimeSignatureControlsViewModel timeSignatureControls;
         private readonly PaletteHelper paletteHelper;
+
         private double accentClickFreq;
         private double clickFreq;
         private ListItem<SignalGeneratorType> selectedWaveType;
@@ -74,6 +77,12 @@ namespace Proggy.ViewModels
             UserSettings = settings;
 
             paletteHelper = new PaletteHelper();
+
+            timeSignatureControls = new TimeSignatureControlsViewModel()
+            {
+                SelectedBeats = settings.ClickSettings.PrecountBarBeats,
+                SelectedNoteLength = settings.ClickSettings.PrecountBarNoteLength
+            };
 
             WaveTypes = new ListItem<SignalGeneratorType>[]
             {
@@ -121,6 +130,14 @@ namespace Proggy.ViewModels
                 {
                     theme.SetSecondaryColor(x.Value);
                 }));
+
+            this.WhenAnyValue(x => x.TimeSignatureControls.SelectedBeats,
+                              x => x.TimeSignatureControls.SelectedNoteLength)
+                .Subscribe(x => 
+                {
+                    UserSettings.ClickSettings.PrecountBarBeats = x.Item1;
+                    UserSettings.ClickSettings.PrecountBarNoteLength = x.Item2;
+                });
         }
 
         public void TestAccentClick()
