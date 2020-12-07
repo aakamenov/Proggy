@@ -7,6 +7,8 @@
         xmlns:m="clr-namespace:Proggy.ViewModels.CollectionItems"
         xmlns:infrastructure="clr-namespace:Proggy.Infrastructure"
         xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
+        xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+        xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
         x:Class="Proggy.Views.AdvancedModeView">
   <Grid RowDefinitions="Auto, 4*, Auto">
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -27,7 +29,15 @@
             <infrastructure:TypedElementFactory.Templates>
               
               <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
-                <material:Card Background="{Binding BackgroundColor}">
+                <material:Card Background="{DynamicResource MaterialDesignCardBackground}" x:Name="Border">
+                  <i:Interaction.Behaviors>
+                    <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="true">
+                      <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource SecondaryColor}" />
+                    </ia:DataTriggerBehavior>
+                    <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="false">
+                      <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
+                    </ia:DataTriggerBehavior>
+                  </i:Interaction.Behaviors>
                   <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" CommandParameter="{Binding}" MinWidth="80" MinHeight="80">
                     <Button.ContextMenu>
                       <ContextMenu>
