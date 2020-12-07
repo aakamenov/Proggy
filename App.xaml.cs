@@ -1,10 +1,12 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using Avalonia.Markup.Xaml;
-using Proggy.Views;
 using Material.Styles.Themes;
 using Material.Styles.Themes.Base;
 using Akavache;
+using Proggy.Views;
+using Proggy.Models;
 
 namespace Proggy
 {
@@ -24,12 +26,15 @@ namespace Proggy
             SetThemeColors(paletteHelper.GetTheme());
         }
 
-        public override void OnFrameworkInitializationCompleted()
+        public async override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = new MainWindow();
             }
+
+            var settings = await UserSettings.Get();
+            paletteHelper.SetTheme(settings.Theme);
 
             base.OnFrameworkInitializationCompleted();
         }
@@ -40,22 +45,22 @@ namespace Proggy
 
         private void SetThemeColors(ITheme theme)
         {
-            var primaryColor = theme.GetBaseTheme() switch
-            {
-                BaseThemeMode.Dark => theme.PrimaryDark,
-                BaseThemeMode.Light => theme.PrimaryLight,
-                BaseThemeMode.Inherit => theme.PrimaryMid
-            };
+            Color primaryColor;
+            Color secondaryColor;
 
-            var secondaryColor = theme.GetBaseTheme() switch
+            if(theme.GetBaseTheme() == BaseThemeMode.Dark)
             {
-                BaseThemeMode.Dark => theme.SecondaryDark,
-                BaseThemeMode.Light => theme.SecondaryLight,
-                BaseThemeMode.Inherit => theme.SecondaryMid
-            };
+                primaryColor = theme.PrimaryDark.Color;
+                secondaryColor = theme.SecondaryDark.Color;
+            }
+            else
+            {
+                primaryColor = theme.PrimaryLight.Color;
+                secondaryColor = theme.SecondaryLight.Color;
+            }
 
-            Resources["PrimaryColor"] = primaryColor.Color;
-            Resources["SecondaryColor"] = secondaryColor.Color;
+            Resources["PrimaryColor"] = primaryColor;
+            Resources["SecondaryColor"] = secondaryColor;
         }
     }
 }

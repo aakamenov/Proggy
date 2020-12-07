@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using NAudio.Wave.SampleProviders;
+using Material.Styles.Themes;
 using Akavache;
 using Proggy.Core;
 
@@ -13,6 +14,7 @@ namespace Proggy.Models
         private const string Key = "user-settings";
 
         public ClickSettings ClickSettings { get; }
+        public ITheme Theme { get; set; }
 
         private UserSettings() 
         {
@@ -22,6 +24,8 @@ namespace Proggy.Models
                 AccentClickFreq = 4000,
                 ClickFreq = 2000
             };
+
+            Theme = new PaletteHelper().GetTheme();
         }
 
         public static async Task<UserSettings> Get()

@@ -3,6 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
+        xmlns:materialTheme="clr-namespace:Material.Styles.Themes.Base;assembly=Material.Styles"
+        xmlns:local="clr-namespace:Proggy.Infrastructure.Converters;assembly=Proggy"
         mc:Ignorable="d" d:DesignWidth="460" d:DesignHeight="500"
         x:Class="Proggy.Views.SettingsDialog"
         Height="500"
@@ -12,14 +14,23 @@
   <Window.Resources>
     <Thickness x:Key="DescMargin">0,10,5,0</Thickness>
     <Thickness x:Key="WidgetMargin">0,10,0,0</Thickness>
+    <local:ThemeToBoolConverter x:Key="ThemeToBool" />
+    <local:ColorToSolidBrushConverter x:Key="ColorToBrush" />
+    <materialTheme:BaseThemeMode x:Key="LightThemeMode">Light</materialTheme:BaseThemeMode>
+    <materialTheme:BaseThemeMode x:Key="DarkThemeMode">Dark</materialTheme:BaseThemeMode>
+    <DataTemplate x:Key="ColorComboBoxTemplate">
+      <Canvas Height="30" Width="30" Background="{Binding, Converter={StaticResource ResourceKey=ColorToBrush}}" />
+    </DataTemplate>
   </Window.Resources>
 
   <TabControl>
     <TabItem Header="General">
       <ScrollViewer>
         <StackPanel Margin="10,10,10,10">
+          
           <TextBlock Classes="title">Click Sound</TextBlock>
           <material:Card>
+            
             <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="1*, 2*">
               <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Wave type:</TextBlock>
               <ComboBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Items="{Binding WaveTypes}" SelectedItem="{Binding SelectedWaveType}"/>
@@ -42,7 +53,44 @@
               </Grid>
               
             </Grid>
-          </material:Card>       
+          </material:Card>
+
+          <TextBlock Classes="title">Theme</TextBlock>
+          <material:Card>
+            
+            <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="1*, 2*">
+
+              <Grid Margin="{StaticResource WidgetMargin}" ColumnDefinitions="1*, 1*" Grid.Row="0" Grid.ColumnSpan="2">
+                
+                <RadioButton Grid.Column="0"
+                             HorizontalAlignment="Center"
+                             GroupName="Theme"
+                             Command="{Binding ChangeThemeMode}"
+                             CommandParameter="{StaticResource ResourceKey=LightThemeMode}"
+                             IsChecked="{Binding ThemeMode, Mode=OneWay, Converter={StaticResource ResourceKey=ThemeToBool}, ConverterParameter={StaticResource LightThemeMode}}"
+                             Content="Light">
+                </RadioButton>
+                
+                <RadioButton Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             GroupName="Theme"
+                             Command="{Binding ChangeThemeMode}"
+                             CommandParameter="{StaticResource ResourceKey=DarkThemeMode}"
+                             IsChecked="{Binding ThemeMode, Mode=OneWay, Converter={StaticResource ResourceKey=ThemeToBool}, ConverterParameter={StaticResource DarkThemeMode}}"
+                             Content="Dark">
+                </RadioButton>
+                
+              </Grid>
+
+              <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="1" Grid.Column="0">Primary color:</TextBlock>
+              <ComboBox Margin="{StaticResource WidgetMargin}" Grid.Row="1" Grid.Column="1" Items="{Binding PrimaryColors}" SelectedItem="{Binding PrimaryColor}" ItemTemplate="{StaticResource ResourceKey=ColorComboBoxTemplate}" />
+
+              <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="2" Grid.Column="0">Secondary color:</TextBlock>
+              <ComboBox Margin="{StaticResource WidgetMargin}" Grid.Row="2" Grid.Column="1" Items="{Binding SecondaryColors}" SelectedItem="{Binding SecondaryColor}" ItemTemplate="{StaticResource ResourceKey=ColorComboBoxTemplate}" />
+
+            </Grid>
+          </material:Card>
+          
         </StackPanel>
       </ScrollViewer>
     </TabItem>
