@@ -9,6 +9,7 @@ using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
 using Proggy.ViewModels.CollectionItems;
 using ReactiveUI;
+using Avalonia.Threading;
 using NAudio.Wave;
 
 namespace Proggy.ViewModels
@@ -16,6 +17,8 @@ namespace Proggy.ViewModels
     public class AdvancedModeViewModel : ViewModelBase
     {
         public ObservableCollection<ClickTrackGridItem> Items { get; }
+
+        public Action<int> ScrollToBar { get; set; }
 
         public bool Loop
         {
@@ -114,7 +117,7 @@ namespace Proggy.ViewModels
             }
         }
 
-        private void UpdateCurrentBar()
+        private async void UpdateCurrentBar()
         {
             var current = (BarInfoGridItem)Items[currentItemIndex];
             current.IsSelected = true;
@@ -136,6 +139,8 @@ namespace Proggy.ViewModels
                 currentItemIndex++;
 
             timer.Interval = current.BarInfo.Interval * current.BarInfo.Beats;
+
+            await Dispatcher.UIThread.InvokeAsync(() => ScrollToBar(currentItemIndex));
         }
 
         private void DeselectAll()
