@@ -20,9 +20,11 @@ namespace Proggy.Views
 
         private void OnDataContextChanged(object sender, EventArgs e)
         {
-            var vm = (AdvancedModeViewModel)DataContext;
-            vm.ScrollToBar = ScrollTo;
+            if (DataContext is null)
+                return;
             
+            var vm = (AdvancedModeViewModel)DataContext;
+            vm.ScrollToBar = ScrollTo;         
         }
 
         private void ScrollTo(int childIndex)

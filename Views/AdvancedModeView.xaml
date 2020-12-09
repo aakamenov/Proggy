@@ -9,68 +9,111 @@
         xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
         xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
         xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         x:Class="Proggy.Views.AdvancedModeView">
-  <Grid RowDefinitions="Auto, 4*, Auto">
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-      <ToggleSwitch IsChecked="{Binding Precount}" Margin="0,5,10,5">Precount</ToggleSwitch>
-      <ToggleSwitch IsChecked="{Binding Loop}" Margin="0,5,10,5">Loop</ToggleSwitch>
-    </StackPanel>
+
+  <UserControl.Resources>
+    <sys:Double x:Key="CellSize">90</sys:Double>
+  </UserControl.Resources>
+  
+  <DockPanel>
     
-    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <Menu DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignCardBackground}">
       
-      <ItemsRepeater x:Name="Items" Items="{Binding Items}" HorizontalAlignment="Center">
+      <MenuItem Header="File">
         
-        <ItemsRepeater.Layout>
-          <UniformGridLayout ItemsJustification="Start" MinRowSpacing="5" Orientation="Horizontal" MaximumRowsOrColumns="6" ItemsStretch="Uniform"/>
-        </ItemsRepeater.Layout>
+        <MenuItem Header="New"/>       
+        <MenuItem Header="Open"/>        
+        <MenuItem Header="Save"/>       
+        <MenuItem Header="Export">
+          <MenuItem Header="WAV"/>
+          <MenuItem Header="MP3"/>
+        </MenuItem>
         
-        <ItemsRepeater.ItemTemplate>
-          <infrastructure:TypedElementFactory>
-            <infrastructure:TypedElementFactory.Templates>
-              
-              <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
-                <material:Card Background="{DynamicResource MaterialDesignCardBackground}" x:Name="Border">
-                  <i:Interaction.Behaviors>
-                    <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="true">
-                      <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource SecondaryColor}" />
-                    </ia:DataTriggerBehavior>
-                    <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="false">
-                      <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
-                    </ia:DataTriggerBehavior>
-                  </i:Interaction.Behaviors>
-                  <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" CommandParameter="{Binding}" MinWidth="80" MinHeight="80">
-                    <Button.ContextMenu>
-                      <ContextMenu>
-                        <MenuItem Header="Delete (d)" HotKey="d" Command="{Binding $parent[ItemsRepeater].DataContext.DeleteItem}" CommandParameter="{Binding}" />
-                      </ContextMenu>
-                    </Button.ContextMenu>
-                    <Grid RowDefinitions="*, 2*">
-                      <TextBlock Grid.Row="0" HorizontalAlignment="Center" Text="{Binding BarInfo.Tempo}"></TextBlock>
-                      <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="20" Text="{Binding TimeSignature}"></TextBlock>
-                    </Grid>
-                  </Button>
-                </material:Card>
-              </DataTemplate>
-              
-              <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
-                <material:Card>
-                  <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" MinWidth="80" MinHeight="80">
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
-                  </Button>
-                </material:Card>
-              </DataTemplate>
-              
-            </infrastructure:TypedElementFactory.Templates>
-          </infrastructure:TypedElementFactory>
-        
-        </ItemsRepeater.ItemTemplate>
-        
-      </ItemsRepeater>
-    </ScrollViewer>
+      </MenuItem>
+      
+    </Menu>
+  
+    <Grid DockPanel.Dock="Bottom" RowDefinitions="Auto, 4*, Auto">
     
-    <material:Card Grid.Row="2" HorizontalAlignment="Center">
-      <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
-    </material:Card>
+      <DockPanel>
+        
+        <TextBlock DockPanel.Dock="Left" Margin="10,0,0,0" Classes="title" Text="New Track" />
+
+        <StackPanel DockPanel.Dock="Right" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+          <ToggleSwitch IsChecked="{Binding Precount}" Margin="0,5,10,5">Precount</ToggleSwitch>
+          <ToggleSwitch IsChecked="{Binding Loop}" Margin="0,5,10,5">Loop</ToggleSwitch>
+        </StackPanel>
+      
+      </DockPanel>
     
-  </Grid>
+      <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+      
+        <ItemsRepeater x:Name="Items" Items="{Binding Items}" HorizontalAlignment="Center">
+        
+          <ItemsRepeater.Layout>
+            <UniformGridLayout ItemsJustification="Start" MinRowSpacing="5" Orientation="Horizontal" MaximumRowsOrColumns="5" ItemsStretch="None"/>
+          </ItemsRepeater.Layout>
+        
+          <ItemsRepeater.ItemTemplate>
+            <infrastructure:TypedElementFactory>
+              <infrastructure:TypedElementFactory.Templates>
+              
+                <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
+                
+                  <material:Card Background="{DynamicResource MaterialDesignCardBackground}" x:Name="Border">
+                  
+                    <i:Interaction.Behaviors>
+                    
+                      <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="true">
+                        <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource SecondaryColor}" />
+                      </ia:DataTriggerBehavior>
+                    
+                      <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="false">
+                        <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
+                      </ia:DataTriggerBehavior>
+                    
+                    </i:Interaction.Behaviors>
+                  
+                    <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" CommandParameter="{Binding}" Width="{StaticResource ResourceKey=CellSize}" Height="{StaticResource ResourceKey=CellSize}">
+                    
+                      <Button.ContextMenu>
+                        <ContextMenu>
+                          <MenuItem Header="Delete (d)" HotKey="47" Command="{Binding $parent[ItemsRepeater].DataContext.DeleteItem}" CommandParameter="{Binding}" />
+                        </ContextMenu>
+                      </Button.ContextMenu>
+                    
+                      <Grid RowDefinitions="*, 2*">
+                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="16" Text="{Binding BarInfo.Tempo}"></TextBlock>
+                        <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="21" Text="{Binding TimeSignature}"></TextBlock>
+                      </Grid>
+                    
+                    </Button>
+                  
+                  </material:Card>
+                
+                </DataTemplate>
+              
+                <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
+                  <material:Card>
+                    <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" Width="{StaticResource ResourceKey=CellSize}" Height="{StaticResource ResourceKey=CellSize}">
+                      <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
+                    </Button>
+                  </material:Card>
+                </DataTemplate>
+              
+              </infrastructure:TypedElementFactory.Templates>
+            </infrastructure:TypedElementFactory>
+        
+          </ItemsRepeater.ItemTemplate>
+        
+        </ItemsRepeater>
+      </ScrollViewer>
+    
+      <material:Card Grid.Row="2" HorizontalAlignment="Center">
+        <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
+      </material:Card>
+    
+    </Grid>
+  </DockPanel>
 </UserControl>
