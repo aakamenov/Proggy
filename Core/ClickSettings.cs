@@ -7,7 +7,7 @@ namespace Proggy.Core
         public SignalGeneratorType WaveType { get; set; }
         public double AccentClickFreq { get; set; }
         public double ClickFreq { get; set; }
-        public short PrecountBarBeats { get; set; }
-        public short PrecountBarNoteLength { get; set; }
+        public byte PrecountBarBeats { get; set; }
+        public byte PrecountBarNoteLength { get; set; }
     }
 }

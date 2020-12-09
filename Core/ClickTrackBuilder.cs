@@ -9,23 +9,23 @@ namespace Proggy.Core
     public static class ClickTrackBuilder
     {
         public const int SoundDurationMs = 20;
-        public static ISampleProvider BuildSinglePulse(BarInfo info, ClickSettings settings)
+        public static ISampleProvider BuildSinglePulse(in BarInfo info, ClickSettings settings)
         {
             var track = BuildBar(info, settings);
             return new LoopingSampleProvider(CachedSound.FromSampleProvider(track));
         }
 
         public static async Task<ISampleProvider> BuildClickTrackAsync(
-            IList<BarInfo> infos,
+            BarInfo[] infos,
             ClickSettings settings,
             bool precount,
             bool loop)
         {
             return await Task.Run(() => 
             {
-                var providers = new ISampleProvider[infos.Count];
+                var providers = new ISampleProvider[infos.Length];
 
-                for (var i = 0; i < infos.Count; i++)
+                for (var i = 0; i < infos.Length; i++)
                     providers[i] = CachedSound.FromSampleProvider(BuildBar(infos[i], settings));
 
                 var track = new ConcatenatingSampleProvider(providers);
@@ -58,7 +58,7 @@ namespace Proggy.Core
             });
         }
 
-        private static ISampleProvider BuildBar(BarInfo info, ClickSettings settings)
+        private static ISampleProvider BuildBar(in BarInfo info, ClickSettings settings)
         {
             var providers = new ISampleProvider[info.Beats];
 

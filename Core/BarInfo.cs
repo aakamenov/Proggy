@@ -1,9 +1,9 @@
 ﻿namespace Proggy.Core
 {
-    public class BarInfo
+    public struct BarInfo
     {
-        public short Beats { get; }
-        public short NoteLength { get; }
+        public byte Beats { get; }
+        public byte NoteLength { get; }
         public short Tempo { get; }
         public int Interval 
         { 
@@ -18,21 +18,12 @@
 
         private int? interval;
 
-        public BarInfo(short tempo, short beats, short noteLength)
+        public BarInfo(short tempo, byte beats, byte noteLength)
         {
             NoteLength = noteLength;
             Tempo = tempo;
             Beats = beats;
-        }
-
-        public BarInfo DeepCopy()
-        {
-            var instance = new BarInfo(Tempo, Beats, NoteLength)
-            {
-                interval = interval
-            };
-
-            return instance;
+            interval = null;
         }
 
         private void CalculateInterval()

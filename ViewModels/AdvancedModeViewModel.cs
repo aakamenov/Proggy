@@ -69,7 +69,7 @@ namespace Proggy.ViewModels
             {
                 var result = await WindowNavigation.ShowDialogAsync(() => 
                 {
-                    return new TimeSignatureDialogViewModel(item.BarInfo.DeepCopy());
+                    return new TimeSignatureDialogViewModel(item.BarInfo);
                 });
 
                 if (result.WasClosedFromView)
