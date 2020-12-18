@@ -22,9 +22,9 @@
       
       <MenuItem Header="File">
         
-        <MenuItem Header="New"/>       
-        <MenuItem Header="Open"/>        
-        <MenuItem Header="Save"/>       
+        <MenuItem Header="New" Command="{Binding New}"/>       
+        <MenuItem Header="Open" Command="{Binding Open}"/>        
+        <MenuItem Header="Save" Command="{Binding Save}" />       
         <MenuItem Header="Export">
           <MenuItem Header="WAV"/>
           <MenuItem Header="MP3"/>
@@ -38,7 +38,7 @@
     
       <DockPanel>
         
-        <TextBlock DockPanel.Dock="Left" Margin="10,0,0,0" Classes="title" Text="New Track" />
+        <controls:EditableTextBlock DockPanel.Dock="Left" Margin="10,0,0,0" Text="{Binding TrackName}" />
 
         <StackPanel DockPanel.Dock="Right" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
           <ToggleSwitch IsChecked="{Binding Precount}" Margin="0,5,10,5">Precount</ToggleSwitch>

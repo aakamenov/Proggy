@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
@@ -9,6 +8,7 @@ namespace Proggy.Core
     public static class ClickTrackBuilder
     {
         public const int SoundDurationMs = 20;
+
         public static ISampleProvider BuildSinglePulse(in BarInfo info, ClickSettings settings)
         {
             var track = BuildBar(info, settings);

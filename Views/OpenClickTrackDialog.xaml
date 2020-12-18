@@ -1,0 +1,31 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
+        mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="210"
+        Width="250"
+        Height="210"
+        x:Class="Proggy.Views.OpenClickTrackDialog"
+        Title="Open">
+
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    
+    <material:Card>
+      
+      <StackPanel>
+        <TextBlock HorizontalAlignment="Center" Classes="title">Select track</TextBlock>
+        <ComboBox SelectedItem="{Binding SelectedTrack, Mode=TwoWay}" Items="{Binding Tracks}"/>
+        <Button Command="{Binding Delete}" IsEnabled="{Binding CanOpen}">Delete selected track</Button>
+      </StackPanel>
+      
+    </material:Card>
+    
+    <StackPanel Orientation="Horizontal">
+      <Button Command="{Binding Open}" IsEnabled="{Binding CanOpen}">Open</Button>
+      <Button Command="{Binding OpenTracksFolder}">View folder</Button>
+    </StackPanel>
+    
+  </StackPanel>
+    
+</Window>

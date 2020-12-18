@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,30 +32,35 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref precount, value);
         }
 
+        public string TrackName
+        {
+            get => trackName;
+            set => this.RaiseAndSetIfChanged(ref trackName, value);
+        }
+
         public GlobalControlsViewModel GlobalControls => globalControls;
 
         private readonly GlobalControlsViewModel globalControls;
         private bool loop;
         private bool precount;
         private int currentItemIndex;
-
         private AccurateTimer timer;
+        private string trackName;
 
         public AdvancedModeViewModel()
         {
             globalControls = new GlobalControlsViewModel(BuildClickTrackAsync, MetronomeMode.Advanced);
 
-            Items = new ObservableCollection<ClickTrackGridItem>
-            {
-                new BarInfoGridItem(new BarInfo(120, 4, 4)),
-                new AddButtonGridItem()
-            };
+            Items = new ObservableCollection<ClickTrackGridItem>();
+            InitializeTrack();
 
             Loop = true;
 
             MessageBus.Current.Listen<MetronomePlaybackStateChanged>().Subscribe(OnMetronomePlaybackStateChanged);
 
             timer = new AccurateTimer(UpdateCurrentBar);
+
+            SetNewTrackName();
         }
 
         public async void OnItemClicked(BarInfoGridItem item)
@@ -81,6 +87,42 @@ namespace Proggy.ViewModels
         {
             if (Items.Count > 2)
                 Items.Remove(item);
+        }
+
+        public async void Save()
+        {
+            var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
+
+            await ClickTrackFile.Save(infos, TrackName);
+        }
+
+        public async void Open()
+        {
+            var result = await WindowNavigation.ShowDialogAsync(() => 
+            {
+                return new OpenClickTrackDialog(ClickTrackFile.Enumerate());
+            });
+
+            if(result.WasClosedFromView)
+            {
+                var track = await ClickTrackFile.Load(result.SelectedTrack);
+
+                Items.Clear();
+
+                foreach (var info in track)
+                    Items.Add(new BarInfoGridItem(info));
+
+                Items.Add(new AddButtonGridItem());
+
+                TrackName = result.SelectedTrack;
+            }
+        }
+
+        public void New()
+        {
+            Items.Clear();
+            InitializeTrack();
+            SetNewTrackName();
         }
 
         private async Task<ISampleProvider> BuildClickTrackAsync()
@@ -147,6 +189,38 @@ namespace Proggy.ViewModels
         {
             foreach (var item in Items.OfType<BarInfoGridItem>())
                 item.IsSelected = false;
+        }
+
+        private void SetNewTrackName()
+        {
+            const string newTrack = "New Track";
+
+            var names = ClickTrackFile.Enumerate()
+                .Where(x => x.StartsWith(newTrack))
+                .ToArray();
+
+            if (names.Length > 0)
+            {
+                var counter = names.Length;
+                var name = string.Empty;
+
+                do
+                {
+                    counter++;
+                    name = $"{newTrack} {counter}";
+                }
+                while (File.Exists(Path.Combine(ClickTrackFile.FolderPath, $"{name}{ClickTrackFile.FileExtension}")));
+
+                TrackName = name;
+            }
+            else
+                TrackName = newTrack;
+        }
+
+        private void InitializeTrack()
+        {
+            Items.Add(new BarInfoGridItem(new BarInfo(120, 4, 4)));
+            Items.Add(new AddButtonGridItem());
         }
     }
 }

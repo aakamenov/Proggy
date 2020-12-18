@@ -13,10 +13,12 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Remove="Controls\EditableTextBlock.xaml" />
     <AvaloniaResource Remove="Controls\GlobalControls.xaml" />
     <AvaloniaResource Remove="Controls\TimeSignatureControls.xaml" />
     <AvaloniaResource Remove="Views\AdvancedModeView.xaml" />
     <AvaloniaResource Remove="Views\BasicModeView.xaml" />
+    <AvaloniaResource Remove="Views\OpenClickTrackDialog.xaml" />
     <AvaloniaResource Remove="Views\SettingsDialog.xaml" />
     <AvaloniaResource Remove="Views\TimeSignatureDialog.xaml" />
   </ItemGroup>
@@ -24,12 +26,20 @@
     <AvaloniaXaml Remove="Views\MainWindow.axaml" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Controls\EditableTextBlock.xaml" />
     <None Remove="Controls\TimeSignatureControls.xaml" />
+    <None Remove="Views\OpenClickTrackDialog.xaml" />
     <None Remove="Views\SettingsDialog.xaml" />
     <None Remove="Views\TimeSignatureDialog.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaXaml Include="Controls\EditableTextBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
     <AvaloniaXaml Include="Controls\TimeSignatureControls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Include="Views\OpenClickTrackDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </AvaloniaXaml>
     <AvaloniaXaml Include="Views\SettingsDialog.xaml">
@@ -60,8 +70,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\EditableTextBlock.xaml.cs">
+      <DependentUpon>EditableTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\TimeSignatureControls.xaml.cs">
       <DependentUpon>TimeSignatureControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\OpenClickTrackDialog.xaml.cs">
+      <DependentUpon>OpenClickTrackDialog.xaml</DependentUpon>
     </Compile>
     <Compile Update="Views\SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>

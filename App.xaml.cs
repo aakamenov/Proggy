@@ -16,7 +16,7 @@ namespace Proggy
 
         public override void Initialize()
         {
-            BlobCache.ApplicationName = "Proggy";
+            BlobCache.ApplicationName = Constants.AppName;
 
             AvaloniaXamlLoader.Load(this);
 

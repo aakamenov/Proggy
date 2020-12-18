@@ -3,6 +3,19 @@
     public struct BarInfo
     {
         public byte Beats { get; }
+        public bool[] Accents
+        {
+            get
+            {
+                if(accents is null)
+                {
+                    accents = new bool[Beats];
+                    accents[0] = true;
+                }
+
+                return accents;
+            }
+        }
         public byte NoteLength { get; }
         public short Tempo { get; }
         public int Interval 
@@ -17,12 +30,15 @@
         }
 
         private int? interval;
+        private bool[] accents;
 
         public BarInfo(short tempo, byte beats, byte noteLength)
         {
             NoteLength = noteLength;
             Tempo = tempo;
             Beats = beats;
+
+            accents = null;
             interval = null;
         }
 

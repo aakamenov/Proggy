@@ -10,10 +10,12 @@
         CanResize="False"
         x:Class="Proggy.Views.TimeSignatureDialog"
         Title="Set Time Signature">
+  
   <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
     <material:Card>
       <controls:TimeSignatureControls DataContext="{Binding TimeSignatureControls}" />
     </material:Card>
     <Button Content="Save" Command="{Binding Save}" />
   </StackPanel>
+  
 </Window>
