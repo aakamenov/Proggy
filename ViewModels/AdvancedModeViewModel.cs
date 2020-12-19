@@ -17,6 +17,8 @@ namespace Proggy.ViewModels
 {
     public class AdvancedModeViewModel : ViewModelBase
     {
+        public const int MaxRowsOrCols = 5;
+
         public ObservableCollection<ClickTrackGridItem> Items { get; }
 
         public Action<int> ScrollToBar { get; set; }
@@ -163,6 +165,8 @@ namespace Proggy.ViewModels
                 if (Items.Count == 2)
                     return;
 
+                Items.RemoveAt(Items.Count - 1); //Remove add button
+
                 currentItemIndex = 0;
 
                 if(precount)
@@ -179,6 +183,8 @@ namespace Proggy.ViewModels
             {
                 timer.Stop();
                 DeselectAll();
+
+                Items.Add(new AddButtonGridItem());
             }
         }
 
@@ -194,18 +200,20 @@ namespace Proggy.ViewModels
             }
             else if (currentItemIndex == 0)
             {
-                var lastItem = (BarInfoGridItem)Items[Items.Count - 2];
+                var lastItem = (BarInfoGridItem)Items[Items.Count - 1];
                 lastItem.IsSelected = false;
             }
 
-            if (currentItemIndex == Items.Count - 2)
+            if (currentItemIndex == Items.Count - 1)
                 currentItemIndex = 0;
             else
                 currentItemIndex++;
 
             timer.Interval = current.BarInfo.Interval * current.BarInfo.Beats;
 
-            await Dispatcher.UIThread.InvokeAsync(() => ScrollToBar(currentItemIndex));
+            //This should be done last
+            if(currentItemIndex % MaxRowsOrCols == 1)
+                await Dispatcher.UIThread.InvokeAsync(() => ScrollToBar(currentItemIndex));
         }
 
         private void DeselectAll()

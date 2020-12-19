@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="650"
         xmlns:controls="clr-namespace:Proggy.Controls"
+        xmlns:vm="clr-namespace:Proggy.ViewModels"
         xmlns:m="clr-namespace:Proggy.ViewModels.CollectionItems"
         xmlns:infrastructure="clr-namespace:Proggy.Infrastructure"
         xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
@@ -52,7 +53,15 @@
         <ItemsRepeater x:Name="Items" Items="{Binding Items}" HorizontalAlignment="Center">
         
           <ItemsRepeater.Layout>
-            <UniformGridLayout ItemsJustification="Start" MinRowSpacing="5" Orientation="Horizontal" MaximumRowsOrColumns="5" ItemsStretch="None"/>
+
+            <UniformGridLayout
+              ItemsJustification="Start"
+              MinRowSpacing="5"
+              Orientation="Horizontal"
+              MaximumRowsOrColumns="{x:Static vm:AdvancedModeViewModel.MaxRowsOrCols}"
+              ItemsStretch="None">
+            </UniformGridLayout>
+
           </ItemsRepeater.Layout>
         
           <ItemsRepeater.ItemTemplate>
