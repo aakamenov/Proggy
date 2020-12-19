@@ -21,6 +21,11 @@ namespace Proggy.ViewModels
            
         }
 
+        public override void OnClosing()
+        {
+            globalControls.OnClosing();
+        }
+
         private async Task<ISampleProvider> BuildPulse()
         {
             var settings = await UserSettings.Get();

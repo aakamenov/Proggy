@@ -96,6 +96,11 @@ namespace Proggy.ViewModels
             await result.UserSettings.Save();
         }
 
+        public override void OnClosing()
+        {
+            AudioPlayer.Instance.PlaybackStopped -= OnPlaybackStopped;
+        }
+
         private async Task Play()
         {
             CanPlay = false;
@@ -118,11 +123,6 @@ namespace Proggy.ViewModels
         {
             MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
             PlayButtonText = "Play";
-        }
-
-        ~GlobalControlsViewModel()
-        {
-            AudioPlayer.Instance.PlaybackStopped -= OnPlaybackStopped;
         }
     }
 }

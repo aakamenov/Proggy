@@ -41,6 +41,8 @@ namespace Proggy.ViewModels
         public GlobalControlsViewModel GlobalControls => globalControls;
 
         private readonly GlobalControlsViewModel globalControls;
+        private IDisposable playbackChangedSub;
+
         private bool loop;
         private bool precount;
         private int currentItemIndex;
@@ -56,7 +58,8 @@ namespace Proggy.ViewModels
 
             Loop = true;
 
-            MessageBus.Current.Listen<MetronomePlaybackStateChanged>().Subscribe(OnMetronomePlaybackStateChanged);
+            playbackChangedSub = MessageBus.Current.Listen<MetronomePlaybackStateChanged>()
+                                                   .Subscribe(OnMetronomePlaybackStateChanged);
 
             timer = new AccurateTimer(UpdateCurrentBar);
 
@@ -137,6 +140,12 @@ namespace Proggy.ViewModels
             Items.Clear();
             InitializeTrack();
             SetNewTrackName();
+        }
+
+        public override void OnClosing()
+        {
+            playbackChangedSub.Dispose();
+            globalControls.OnClosing();
         }
 
         private async Task<ISampleProvider> BuildClickTrackAsync()

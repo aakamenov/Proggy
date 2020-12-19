@@ -35,12 +35,25 @@ namespace Proggy.ViewModels
             });
         }
 
+        public override void OnClosing()
+        {
+            CloseCurrentView();
+        }
+
         private void OnModeChanged(ModeChanged msg)
         {
+            CloseCurrentView();
+
             if (msg.Mode == MetronomeMode.Basic)
                 CurrentView = new BasicModeViewModel();
             else if (msg.Mode == MetronomeMode.Advanced)
                 CurrentView = new AdvancedModeViewModel();
+        }
+
+        private void CloseCurrentView()
+        {
+            if (CurrentView != null)
+                CurrentView.OnClosing();
         }
     }
 }
