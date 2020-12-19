@@ -18,7 +18,7 @@ namespace Proggy.ViewModels
         }
 
         public Action Close { get; set; }
-        public bool WasClosedFromView { get; set; }
+        public bool IsConfirm { get; set; }
 
         public bool CanOpen
         {
@@ -61,12 +61,19 @@ namespace Proggy.ViewModels
             Process.Start("explorer.exe", ClickTrackFile.FolderPath);
         }
 
-        public void Delete()
+        public async void Delete()
         {
-            ClickTrackFile.Delete(SelectedTrack);
+            try
+            {
+                ClickTrackFile.Delete(SelectedTrack);
 
-            Tracks.Remove(SelectedTrack);
-            SelectedTrack = Tracks.LastOrDefault();
+                Tracks.Remove(SelectedTrack);
+                SelectedTrack = Tracks.LastOrDefault();
+            }
+            catch(Exception e)
+            {
+                await WindowNavigation.ShowErrorMessageAsync(e);
+            }
         }
     }
 }

@@ -14,7 +14,7 @@
     <material:Card>
       
       <StackPanel>
-        <TextBlock HorizontalAlignment="Center" Classes="title">Select track</TextBlock>
+        <TextBlock Classes="title" HorizontalAlignment="Center">Select track</TextBlock>
         <ComboBox SelectedItem="{Binding SelectedTrack, Mode=TwoWay}" Items="{Binding Tracks}"/>
         <Button Command="{Binding Delete}" IsEnabled="{Binding CanOpen}">Delete selected track</Button>
       </StackPanel>

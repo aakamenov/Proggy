@@ -17,6 +17,7 @@
     <AvaloniaResource Remove="Controls\GlobalControls.xaml" />
     <AvaloniaResource Remove="Controls\TimeSignatureControls.xaml" />
     <AvaloniaResource Remove="Views\AdvancedModeView.xaml" />
+    <AvaloniaResource Remove="Views\AlertDialog.xaml" />
     <AvaloniaResource Remove="Views\BasicModeView.xaml" />
     <AvaloniaResource Remove="Views\OpenClickTrackDialog.xaml" />
     <AvaloniaResource Remove="Views\SettingsDialog.xaml" />
@@ -28,6 +29,7 @@
   <ItemGroup>
     <None Remove="Controls\EditableTextBlock.xaml" />
     <None Remove="Controls\TimeSignatureControls.xaml" />
+    <None Remove="Views\AlertDialog.xaml" />
     <None Remove="Views\OpenClickTrackDialog.xaml" />
     <None Remove="Views\SettingsDialog.xaml" />
     <None Remove="Views\TimeSignatureDialog.xaml" />
@@ -37,6 +39,9 @@
       <Generator>MSBuild:Compile</Generator>
     </AvaloniaXaml>
     <AvaloniaXaml Include="Controls\TimeSignatureControls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Include="Views\AlertDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </AvaloniaXaml>
     <AvaloniaXaml Include="Views\OpenClickTrackDialog.xaml">
@@ -75,6 +80,9 @@
     </Compile>
     <Compile Update="Controls\TimeSignatureControls.xaml.cs">
       <DependentUpon>TimeSignatureControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\AlertDialog.xaml.cs">
+      <DependentUpon>AlertDialog.xaml</DependentUpon>
     </Compile>
     <Compile Update="Views\OpenClickTrackDialog.xaml.cs">
       <DependentUpon>OpenClickTrackDialog.xaml</DependentUpon>

@@ -1,0 +1,23 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
+        mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="300"
+        x:Class="Proggy.Views.AlertDialog"
+        SizeToContent="WidthAndHeight"
+        Title="{Binding Title}">
+  
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="350">
+    
+    <material:Card>
+      <TextBlock Text="{Binding Message, Mode=OneTime}" TextWrapping="Wrap" />
+    </material:Card>
+
+    <StackPanel Orientation="Horizontal">
+      <Button Command="{Binding Cancel}">OK</Button>
+    </StackPanel>
+    
+  </StackPanel>
+  
+</Window>

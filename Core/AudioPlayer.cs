@@ -15,14 +15,7 @@ namespace Proggy.Core
         public float Volume
         {
             get => outputDevice.Volume;
-            set
-            {
-#if DEBUG
-                if (value < 0 || value > 1.0f)
-                    throw new InvalidOperationException("Volume value must be between 0f and 1.0f.");
-#endif
-                outputDevice.Volume = value;
-            }
+            set => outputDevice.Volume = value;
         }
 
         private static readonly AudioPlayer instance;

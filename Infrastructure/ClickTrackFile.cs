@@ -25,12 +25,13 @@ namespace Proggy.Infrastructure
             var appFolder = $"{Constants.AppName}\\Tracks";
             FolderPath = Path.Combine(appDataFolder, appFolder);
 
-            if (!Directory.Exists(FolderPath))
-                Directory.CreateDirectory(FolderPath);
+            EnsureDirectory();
         }
 
         public static async Task Save(BarInfo[] data, string filename)
         {
+            EnsureDirectory();
+
             var bytes = JsonSerializer.SerializeToUtf8Bytes(data, options);
             var filePath = Path.Combine(FolderPath, filename + FileExtension);
 
@@ -48,6 +49,8 @@ namespace Proggy.Infrastructure
 
         public static string[] Enumerate()
         {
+            EnsureDirectory();
+
             return Directory.GetFiles(FolderPath, $"*{FileExtension}")
                             .Select(Path.GetFileNameWithoutExtension)
                             .ToArray();
@@ -60,5 +63,10 @@ namespace Proggy.Infrastructure
             File.Delete(filePath);
         }
 
+        private static void EnsureDirectory()
+        {
+            if (!Directory.Exists(FolderPath))
+                Directory.CreateDirectory(FolderPath);
+        }
     }
 }

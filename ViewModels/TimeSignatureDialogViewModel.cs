@@ -8,7 +8,7 @@ namespace Proggy.ViewModels
     public class TimeSignatureDialogViewModel : ViewModelBase, IDialog
     {
         public Action Close { get; set; }
-        public bool WasClosedFromView { get; set; }
+        public bool IsConfirm { get; set; }
         public TimeSignatureControlsViewModel TimeSignatureControls => timeSignatureControls;
         public BarInfo BarInfo { get; private set; }
 

@@ -7,7 +7,7 @@
 
   <StackPanel Orientation="Horizontal">
     <TextBlock x:Name="TextBlock" Cursor="Hand" Classes="title" Text="{Binding $parent[UserControl].Text}" />
-    <TextBox x:Name="TextBox" Width="250" Text="{Binding $parent[UserControl].Text}"></TextBox>
+    <TextBox x:Name="TextBox" Width="250" Text="{Binding $parent[UserControl].Text}" MaxLength="36"></TextBox>
   </StackPanel>
 
 </UserControl>

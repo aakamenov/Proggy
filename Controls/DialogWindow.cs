@@ -17,7 +17,7 @@ namespace Proggy.Controls
             {
                 dialog.Close = new Action(() =>
                 {
-                    dialog.WasClosedFromView = true;
+                    dialog.IsConfirm = true;
                     Close();
                 });
             }

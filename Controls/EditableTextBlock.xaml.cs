@@ -21,6 +21,8 @@ namespace Proggy.Controls
         private readonly TextBlock text;
         private readonly TextBox textBox;
 
+        private string oldTextValue;
+
         public EditableTextBlock()
         {
             InitializeComponent();
@@ -54,13 +56,21 @@ namespace Proggy.Controls
         private void ShowTextBox()
         {
             text.IsVisible = false;
+
             textBox.IsVisible = true;
+            textBox.CaretIndex = textBox.Text.Length;
+            textBox.Focus();
+            
+            oldTextValue = Text;
         }
 
         private void HideTextBox()
         {
             text.IsVisible = true;
             textBox.IsVisible = false;
+
+            if (string.IsNullOrWhiteSpace(Text))
+                Text = oldTextValue;
         }
 
         private void InitializeComponent()

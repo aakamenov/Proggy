@@ -78,7 +78,7 @@ namespace Proggy.ViewModels
                     return new TimeSignatureDialogViewModel(item.BarInfo);
                 });
 
-                if (result.WasClosedFromView)
+                if (result.IsConfirm)
                     item.BarInfo = result.BarInfo;
             }
         }
@@ -93,7 +93,14 @@ namespace Proggy.ViewModels
         {
             var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
 
-            await ClickTrackFile.Save(infos, TrackName);
+            try
+            {
+                await ClickTrackFile.Save(infos, TrackName);
+            }
+            catch(Exception e)
+            {
+                await WindowNavigation.ShowErrorMessageAsync(e);
+            }
         }
 
         public async void Open()
@@ -103,18 +110,25 @@ namespace Proggy.ViewModels
                 return new OpenClickTrackDialog(ClickTrackFile.Enumerate());
             });
 
-            if(result.WasClosedFromView)
+            if(result.IsConfirm)
             {
-                var track = await ClickTrackFile.Load(result.SelectedTrack);
+                try
+                {
+                    var track = await ClickTrackFile.Load(result.SelectedTrack);
 
-                Items.Clear();
+                    Items.Clear();
 
-                foreach (var info in track)
-                    Items.Add(new BarInfoGridItem(info));
+                    foreach (var info in track)
+                        Items.Add(new BarInfoGridItem(info));
 
-                Items.Add(new AddButtonGridItem());
+                    Items.Add(new AddButtonGridItem());
 
-                TrackName = result.SelectedTrack;
+                    TrackName = result.SelectedTrack;
+                }
+                catch(Exception e)
+                {
+                    await WindowNavigation.ShowErrorMessageAsync(e);
+                }
             }
         }
 
