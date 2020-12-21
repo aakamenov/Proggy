@@ -7,8 +7,9 @@
   <StackPanel Orientation="Vertical">
     <StackPanel Orientation="Horizontal">
       <ComboBox SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></ComboBox>
-      <Button IsEnabled="{Binding CanPlay}" Content="{Binding PlayButtonText}" Command="{Binding Toggle}"></Button>
-      <Button Content="Settings" Command="{Binding Settings}"></Button>
+      <!--Focusable needs to be set to False, otherwise Space and Enter trigger the click event on those and mess the hotkey up -->
+      <Button IsEnabled="{Binding CanPlay}" Content="{Binding PlayButtonText}" Command="{Binding Toggle}" Focusable="False" HotKey="Space"></Button>
+      <Button Content="Settings" Command="{Binding Settings}" Focusable="False"></Button>
     </StackPanel>
     <Grid ColumnDefinitions="1*, 2.5*, 1*">
       <TextBlock HorizontalAlignment="Center" Grid.Column="0">Volume: </TextBlock>

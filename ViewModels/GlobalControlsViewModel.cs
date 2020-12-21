@@ -86,6 +86,30 @@ namespace Proggy.ViewModels
                 await Play();
         }
 
+        public async Task Play()
+        {
+            if (AudioPlayer.Instance.IsPlaying)
+                return;
+
+            CanPlay = false;
+            AudioPlayer.Instance.PlaySound(await buildClickTrack());
+            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Playing));
+            CanPlay = true;
+
+            PlayButtonText = "Stop";
+        }
+
+        public void Stop()
+        {
+            if (!AudioPlayer.Instance.IsPlaying)
+                return;
+
+            AudioPlayer.Instance.Stop();
+            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
+
+            PlayButtonText = "Play";
+        }
+
         public async void Settings()
         {
             Stop();
@@ -99,24 +123,6 @@ namespace Proggy.ViewModels
         public override void OnClosing()
         {
             AudioPlayer.Instance.PlaybackStopped -= OnPlaybackStopped;
-        }
-
-        private async Task Play()
-        {
-            CanPlay = false;
-            AudioPlayer.Instance.PlaySound(await buildClickTrack());
-            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Playing));
-            CanPlay = true;
-
-            PlayButtonText = "Stop";
-        }
-
-        private void Stop()
-        {
-            AudioPlayer.Instance.Stop();
-            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
-
-            PlayButtonText = "Play";
         }
 
         private void OnPlaybackStopped(object sender, EventArgs e)

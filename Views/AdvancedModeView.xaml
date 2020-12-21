@@ -23,9 +23,9 @@
       
       <MenuItem Header="File">
         
-        <MenuItem Header="New" Command="{Binding New}"/>       
-        <MenuItem Header="Open" Command="{Binding Open}"/>        
-        <MenuItem Header="Save" Command="{Binding Save}" />       
+        <MenuItem Header="New (Ctrl+N)" HotKey="Ctrl+N" Command="{Binding New}"/>       
+        <MenuItem Header="Open (Ctrl+O)" HotKey="Ctrl+O" Command="{Binding Open}"/>        
+        <MenuItem Header="Save (Ctrl+S)" HotKey="Ctrl+S" Command="{Binding Save}" />       
         <MenuItem Header="Export">
           <MenuItem Header="WAV"/>
           <MenuItem Header="MP3"/>
@@ -88,7 +88,7 @@
                     
                       <Button.ContextMenu>
                         <ContextMenu>
-                          <MenuItem Header="Delete (d)" HotKey="47" Command="{Binding $parent[ItemsRepeater].DataContext.DeleteItem}" CommandParameter="{Binding}" />
+                          <MenuItem Header="Delete" Command="{Binding $parent[ItemsRepeater].DataContext.DeleteItem}" CommandParameter="{Binding}" />
                         </ContextMenu>
                       </Button.ContextMenu>
                     
@@ -105,7 +105,7 @@
               
                 <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
                   <material:Card>
-                    <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" Width="{StaticResource ResourceKey=CellSize}" Height="{StaticResource ResourceKey=CellSize}">
+                    <Button HotKey="Ctrl+A" Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" Width="{StaticResource ResourceKey=CellSize}" Height="{StaticResource ResourceKey=CellSize}">
                       <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
                     </Button>
                   </material:Card>

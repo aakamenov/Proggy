@@ -70,6 +70,9 @@ namespace Proggy.ViewModels
 
         public async void OnItemClicked(BarInfoGridItem item)
         {
+            if (AudioPlayer.Instance.IsPlaying)
+                return;
+
             //Add button pressed
             if(item is null)
             {
@@ -90,7 +93,7 @@ namespace Proggy.ViewModels
 
         public void DeleteItem(BarInfoGridItem item)
         {
-            if (Items.Count > 2)
+            if (Items.Count > 2 && !AudioPlayer.Instance.IsPlaying)
                 Items.Remove(item);
         }
 
@@ -110,6 +113,8 @@ namespace Proggy.ViewModels
 
         public async void Open()
         {
+            globalControls.Stop();
+
             var result = await WindowNavigation.ShowDialogAsync(() => 
             {
                 return new OpenClickTrackDialog(ClickTrackFile.Enumerate());
@@ -139,6 +144,9 @@ namespace Proggy.ViewModels
 
         public void New()
         {
+            if (AudioPlayer.Instance.IsPlaying)
+                return;
+
             Items.Clear();
             InitializeTrack();
             SetNewTrackName();
