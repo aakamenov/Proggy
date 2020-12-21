@@ -97,7 +97,7 @@ namespace Proggy.ViewModels
         public async void Save()
         {
             var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
-
+            
             try
             {
                 await ClickTrackFile.Save(infos, TrackName);
@@ -162,10 +162,10 @@ namespace Proggy.ViewModels
         {
             if (msg.State == MetronomePlaybackState.Playing)
             {
-                if (Items.Count == 2)
-                    return;
-
                 Items.RemoveAt(Items.Count - 1); //Remove add button
+
+                if (Items.Count == 1)
+                    return;
 
                 currentItemIndex = 0;
 
@@ -181,10 +181,13 @@ namespace Proggy.ViewModels
             }
             else
             {
+                Items.Add(new AddButtonGridItem());
+
+                if (Items.Count == 1)
+                    return;
+
                 timer.Stop();
                 DeselectAll();
-
-                Items.Add(new AddButtonGridItem());
             }
         }
 
