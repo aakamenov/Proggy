@@ -2,6 +2,8 @@
 {
     public struct BarInfo
     {
+        public static readonly BarInfo Default = new BarInfo(120, 4, 4);
+
         public byte Beats { get; }
         public bool[] Accents
         {

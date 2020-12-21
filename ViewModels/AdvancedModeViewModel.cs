@@ -40,6 +40,14 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref trackName, value);
         }
 
+        public bool CanUseContextMenu
+        {
+            get => canUseContextMenu && Items.Count > 2;
+            set => this.RaiseAndSetIfChanged(ref canUseContextMenu, value);
+        }
+
+        public bool IsSelecting => selection?.IsSelecting ?? false;
+
         public GlobalControlsViewModel GlobalControls => globalControls;
 
         private readonly GlobalControlsViewModel globalControls;
@@ -47,9 +55,11 @@ namespace Proggy.ViewModels
 
         private bool loop;
         private bool precount;
+        private bool canUseContextMenu;
         private int currentItemIndex;
-        private AccurateTimer timer;
         private string trackName;
+        private AccurateTimer timer;
+        private Selection selection;
 
         public AdvancedModeViewModel()
         {
@@ -59,6 +69,8 @@ namespace Proggy.ViewModels
             InitializeTrack();
 
             Loop = true;
+
+            canUseContextMenu = true;
 
             playbackChangedSub = MessageBus.Current.Listen<MetronomePlaybackStateChanged>()
                                                    .Subscribe(OnMetronomePlaybackStateChanged);
@@ -91,10 +103,23 @@ namespace Proggy.ViewModels
             }
         }
 
-        public void DeleteItem(BarInfoGridItem item)
+        public void Delete(BarInfoGridItem item)
         {
-            if (Items.Count > 2 && !AudioPlayer.Instance.IsPlaying)
+            if (selection is null || selection.IsSelecting)
+            {
+                DeselectAll();
                 Items.Remove(item);
+            }
+            else
+            {
+                for (var i = selection.Start; i <= selection.End; i++)
+                    Items.RemoveAt(selection.Start);
+                
+                if (Items.Count < 2)
+                    Items.Insert(0, new BarInfoGridItem(BarInfo.Default));
+
+                selection = null;
+            }
         }
 
         public async void Save()
@@ -152,6 +177,37 @@ namespace Proggy.ViewModels
             SetNewTrackName();
         }
 
+        public void BeginSelection(BarInfoGridItem item)
+        {
+            DeselectAll();
+
+            item.IsSelected = true;
+
+            selection = new Selection();
+            selection.Begin(Items.IndexOf(item));
+
+            this.RaisePropertyChanged(nameof(IsSelecting));
+        }
+
+        public void EndSelection(BarInfoGridItem item)
+        {
+            selection.Finalize(Items.IndexOf(item));
+            
+            if(selection.Start == selection.End)
+            {
+                item.IsSelected = false;
+                return;
+            }
+
+            for(var i = selection.Start; i <= selection.End; i++)
+            {
+                var bar = (BarInfoGridItem)Items[i];
+                bar.IsSelected = true;
+            }
+
+            this.RaisePropertyChanged(nameof(IsSelecting));
+        }
+
         public override void OnClosing()
         {
             playbackChangedSub.Dispose();
@@ -172,30 +228,36 @@ namespace Proggy.ViewModels
             {
                 Items.RemoveAt(Items.Count - 1); //Remove add button
 
-                if (Items.Count == 1)
-                    return;
+                CanUseContextMenu = false;
 
-                currentItemIndex = 0;
+                DeselectAll();
 
-                if(precount)
+                if (Items.Count > 1)
                 {
-                    var first = (BarInfoGridItem)Items.First();
-                    timer.Interval = new BarInfo(first.BarInfo.Tempo, 4, 4).Interval * 4;
-                }
-                else
-                    timer.Interval = 0;
+                    currentItemIndex = 0;
 
-                timer.Start();
+                    if (precount)
+                    {
+                        var first = (BarInfoGridItem)Items.First();
+                        timer.Interval = new BarInfo(first.BarInfo.Tempo, 4, 4).Interval * 4;
+                    }
+                    else
+                        timer.Interval = 0;
+
+                    timer.Start();
+                }
             }
             else
             {
                 Items.Add(new AddButtonGridItem());
 
-                if (Items.Count == 1)
-                    return;
+                CanUseContextMenu = true;
 
-                timer.Stop();
-                DeselectAll();
+                if (Items.Count > 1)
+                {
+                    timer.Stop();
+                    DeselectAll();
+                }
             }
         }
 
@@ -231,6 +293,8 @@ namespace Proggy.ViewModels
         {
             foreach (var item in Items.OfType<BarInfoGridItem>())
                 item.IsSelected = false;
+
+            selection = null;
         }
 
         private void SetNewTrackName()
@@ -261,7 +325,7 @@ namespace Proggy.ViewModels
 
         private void InitializeTrack()
         {
-            Items.Add(new BarInfoGridItem(new BarInfo(120, 4, 4)));
+            Items.Add(new BarInfoGridItem(BarInfo.Default));
             Items.Add(new AddButtonGridItem());
         }
     }
