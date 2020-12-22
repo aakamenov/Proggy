@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Reactive.Linq;
 using ReactiveUI;
 using Proggy.Infrastructure.Events;
 using Proggy.Infrastructure;
-using System.Reactive.Linq;
 
 namespace Proggy.ViewModels
 {
@@ -11,6 +12,7 @@ namespace Proggy.ViewModels
         public short WindowWidth => currentView is BasicModeViewModel ? basicSize.Item1 : advancedSize.Item1;
         public short WindowHeight => currentView is BasicModeViewModel ? basicSize.Item2 : advancedSize.Item2;
         public bool CanResize => currentView is BasicModeViewModel ? false : true;
+        public Action Shutdown { get; set; }
 
         public ViewModelBase CurrentView 
         {
@@ -35,13 +37,19 @@ namespace Proggy.ViewModels
             });
         }
 
-        public override void OnClosing()
+        public override async void OnClosing()
         {
+            await PromptSave();
+
             CloseCurrentView();
+
+            Shutdown?.Invoke();
         }
 
-        private void OnModeChanged(ModeChanged msg)
+        private async void OnModeChanged(ModeChanged msg)
         {
+            await PromptSave();
+
             CloseCurrentView();
 
             if (msg.Mode == MetronomeMode.Basic)
@@ -54,6 +62,12 @@ namespace Proggy.ViewModels
         {
             if (CurrentView != null)
                 CurrentView.OnClosing();
+        }
+
+        private async Task PromptSave()
+        {
+            if (CurrentView is AdvancedModeViewModel vm)
+                await vm.PromptSave();
         }
     }
 }

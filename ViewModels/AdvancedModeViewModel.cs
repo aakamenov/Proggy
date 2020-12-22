@@ -56,6 +56,7 @@ namespace Proggy.ViewModels
         private bool loop;
         private bool precount;
         private bool canUseContextMenu;
+        private bool pendingChanges;
         private int currentItemIndex;
         private string trackName;
         private AccurateTimer timer;
@@ -84,6 +85,8 @@ namespace Proggy.ViewModels
         {
             if (AudioPlayer.Instance.IsPlaying)
                 return;
+
+            pendingChanges = true;
 
             //Add button pressed
             if(item is null)
@@ -120,10 +123,14 @@ namespace Proggy.ViewModels
 
                 selection = null;
             }
+
+            pendingChanges = true;
         }
 
-        public async void Save()
+        public async Task Save()
         {
+            pendingChanges = false;
+
             var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
             
             try
@@ -147,6 +154,8 @@ namespace Proggy.ViewModels
 
             if(result.IsConfirm)
             {
+                selection = null;
+
                 try
                 {
                     var track = await ClickTrackFile.Load(result.SelectedTrack);
@@ -167,10 +176,15 @@ namespace Proggy.ViewModels
             }
         }
 
-        public void New()
+        public async void New()
         {
             if (AudioPlayer.Instance.IsPlaying)
                 return;
+
+            await PromptSave();
+
+            pendingChanges = false;
+            selection = null;
 
             Items.Clear();
             InitializeTrack();
@@ -196,6 +210,8 @@ namespace Proggy.ViewModels
             if(selection.Start == selection.End)
             {
                 item.IsSelected = false;
+                selection = null;
+
                 return;
             }
 
@@ -212,6 +228,17 @@ namespace Proggy.ViewModels
         {
             playbackChangedSub.Dispose();
             globalControls.OnClosing();
+        }
+
+        public async Task PromptSave()
+        {
+            if (!pendingChanges)
+                return;
+
+            var result = await WindowNavigation.PromptAsync("Do you wish to save your track?", "Save?");
+
+            if (result.Result == DialogAction.OK)
+                await Save();
         }
 
         private async Task<ISampleProvider> BuildClickTrackAsync()

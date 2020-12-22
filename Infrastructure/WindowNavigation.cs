@@ -42,7 +42,7 @@ namespace Proggy.Infrastructure
             
             var lifeTime = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             await window.ShowDialog(lifeTime.MainWindow);
-
+            
             return vm;
         }
 
@@ -58,6 +58,14 @@ namespace Proggy.Infrastructure
             await ShowDialogAsync(() => 
             {
                 return new AlertDialogViewModel(message, "Error");
+            });
+        }
+
+        public static async Task<AlertDialogViewModel> PromptAsync(string message, string title = "Prompt")
+        {
+            return await ShowDialogAsync(() => 
+            {
+                return new AlertDialogViewModel(message, title: title, isYesNo: true);
             });
         }
     }
