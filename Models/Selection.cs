@@ -1,16 +1,40 @@
 ﻿using System;
+using ReactiveUI;
 
 namespace Proggy.Models
 {
-    public class Selection
+    public class Selection : ReactiveObject
     {
-        public int Start { get; private set; }
-        public int End { get; private set; }
-        public bool IsSelecting { get; private set; }
+        public class SelectionRange
+        {
+            public int Start { get; set; }
+            public int End { get; set; }
+        }
+
+        public SelectionRange Range
+        {
+            get => range;
+            set => this.RaiseAndSetIfChanged(ref range, value);
+        }
+
+        public bool HasSelection => range != null && isSelecting == false;
+
+        public bool IsSelecting
+        {
+            get => isSelecting;
+            set => this.RaiseAndSetIfChanged(ref isSelecting, value);
+        }
+
+        private bool isSelecting;
+        private SelectionRange range;
 
         public void Begin(int index)
         {
-            Start = index;
+            range = new SelectionRange()
+            {
+                Start = index
+            };
+
             IsSelecting = true;
         }
 
@@ -19,16 +43,30 @@ namespace Proggy.Models
             if (IsSelecting == false)
                 throw new InvalidOperationException($"Must call {nameof(Begin)} first.");
 
-            End = index;
+            range.End = index;
 
-            if (Start > End)
+            if (range.Start > range.End)
             {
-                var swap = Start;
-                Start = End;
-                End = swap;
+                var swap = range.Start;
+                range.Start = range.End;
+                range.End = swap;
             }
 
             IsSelecting = false;
+        }
+
+        public void RemoveSelection()
+        {
+            range = null;
+            IsSelecting = false;
+        }
+
+        public bool Contains(int index)
+        {
+            if (!HasSelection)
+                return false;
+
+            return index >= range.Start && index <= range.End;
         }
     }
 }

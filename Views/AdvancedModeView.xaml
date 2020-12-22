@@ -90,13 +90,13 @@
                         <ContextMenu IsVisible="{Binding $parent[ItemsRepeater].DataContext.CanUseContextMenu}">                                                
                           
                           <MenuItem Header="Begin selection" 
-                                    IsVisible="{Binding !$parent[ItemsRepeater].DataContext.IsSelecting}" 
+                                    IsVisible="{Binding !$parent[ItemsRepeater].DataContext.Selection.IsSelecting}" 
                                     Command="{Binding $parent[ItemsRepeater].DataContext.BeginSelection}" 
                                     CommandParameter="{Binding}">                     
                           </MenuItem>
                           
                           <MenuItem Header="End selection"
-                                    IsVisible="{Binding $parent[ItemsRepeater].DataContext.IsSelecting}" 
+                                    IsVisible="{Binding $parent[ItemsRepeater].DataContext.Selection.IsSelecting}" 
                                     Command="{Binding $parent[ItemsRepeater].DataContext.EndSelection}" 
                                     CommandParameter="{Binding}">
                           </MenuItem>

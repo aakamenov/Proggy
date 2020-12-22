@@ -46,11 +46,10 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref canUseContextMenu, value);
         }
 
-        public bool IsSelecting => selection?.IsSelecting ?? false;
+        public Selection Selection { get; }
 
-        public GlobalControlsViewModel GlobalControls => globalControls;
+        public GlobalControlsViewModel GlobalControls { get; }
 
-        private readonly GlobalControlsViewModel globalControls;
         private IDisposable playbackChangedSub;
 
         private bool loop;
@@ -60,11 +59,11 @@ namespace Proggy.ViewModels
         private int currentItemIndex;
         private string trackName;
         private AccurateTimer timer;
-        private Selection selection;
 
         public AdvancedModeViewModel()
         {
-            globalControls = new GlobalControlsViewModel(BuildClickTrackAsync, MetronomeMode.Advanced);
+            GlobalControls = new GlobalControlsViewModel(BuildClickTrackAsync, MetronomeMode.Advanced);
+            Selection = new Selection();
 
             Items = new ObservableCollection<ClickTrackGridItem>();
             InitializeTrack();
@@ -108,34 +107,52 @@ namespace Proggy.ViewModels
 
         public void Delete(BarInfoGridItem item)
         {
-            if (selection is null || selection.IsSelecting)
+            var index = Items.IndexOf(item);
+
+            if (Selection.HasSelection && Selection.Contains(index))
             {
-                DeselectAll();
-                Items.Remove(item);
-            }
-            else
-            {
-                for (var i = selection.Start; i <= selection.End; i++)
-                    Items.RemoveAt(selection.Start);
-                
+                var range = Selection.Range;
+
+                for (var i = range.Start; i <= range.End; i++)
+                    Items.RemoveAt(range.Start);
+
                 if (Items.Count < 2)
                     Items.Insert(0, new BarInfoGridItem(BarInfo.Default));
 
-                selection = null;
+                Selection.RemoveSelection();           
             }
+            else if(Selection.HasSelection) //Item is outside of selected range
+            {
+                if (index < Selection.Range.Start)
+                {
+                    Selection.Range.Start--;
+                    Selection.Range.End--;
+                }
+
+                Items.RemoveAt(index);
+            }
+            else if(Selection.IsSelecting)
+            {
+                if(index < Selection.Range.Start)
+                    Selection.Range.Start--;
+
+                Items.RemoveAt(index);
+            }
+            else //No selection
+                Items.RemoveAt(index);
 
             pendingChanges = true;
         }
 
         public async Task Save()
         {
-            pendingChanges = false;
-
             var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
             
             try
             {
                 await ClickTrackFile.Save(infos, TrackName);
+
+                pendingChanges = false;
             }
             catch(Exception e)
             {
@@ -145,7 +162,7 @@ namespace Proggy.ViewModels
 
         public async void Open()
         {
-            globalControls.Stop();
+            GlobalControls.Stop();
 
             var result = await WindowNavigation.ShowDialogAsync(() => 
             {
@@ -154,11 +171,11 @@ namespace Proggy.ViewModels
 
             if(result.IsConfirm)
             {
-                selection = null;
-
                 try
                 {
                     var track = await ClickTrackFile.Load(result.SelectedTrack);
+
+                    await PromptSave();
 
                     Items.Clear();
 
@@ -168,6 +185,8 @@ namespace Proggy.ViewModels
                     Items.Add(new AddButtonGridItem());
 
                     TrackName = result.SelectedTrack;
+
+                    Selection.RemoveSelection();
                 }
                 catch(Exception e)
                 {
@@ -184,7 +203,7 @@ namespace Proggy.ViewModels
             await PromptSave();
 
             pendingChanges = false;
-            selection = null;
+            Selection.RemoveSelection();
 
             Items.Clear();
             InitializeTrack();
@@ -197,37 +216,34 @@ namespace Proggy.ViewModels
 
             item.IsSelected = true;
 
-            selection = new Selection();
-            selection.Begin(Items.IndexOf(item));
-
-            this.RaisePropertyChanged(nameof(IsSelecting));
+            Selection.Begin(Items.IndexOf(item));
         }
 
         public void EndSelection(BarInfoGridItem item)
         {
-            selection.Finalize(Items.IndexOf(item));
-            
-            if(selection.Start == selection.End)
+            Selection.Finalize(Items.IndexOf(item));
+
+            var range = Selection.Range;
+
+            if(range.Start == range.End)
             {
                 item.IsSelected = false;
-                selection = null;
+                Selection.RemoveSelection();
 
                 return;
             }
 
-            for(var i = selection.Start; i <= selection.End; i++)
+            for(var i = range.Start; i <= range.End; i++)
             {
                 var bar = (BarInfoGridItem)Items[i];
                 bar.IsSelected = true;
             }
-
-            this.RaisePropertyChanged(nameof(IsSelecting));
         }
 
         public override void OnClosing()
         {
             playbackChangedSub.Dispose();
-            globalControls.OnClosing();
+            GlobalControls.OnClosing();
         }
 
         public async Task PromptSave()
@@ -321,7 +337,7 @@ namespace Proggy.ViewModels
             foreach (var item in Items.OfType<BarInfoGridItem>())
                 item.IsSelected = false;
 
-            selection = null;
+            Selection.RemoveSelection();
         }
 
         private void SetNewTrackName()
