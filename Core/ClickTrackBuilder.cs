@@ -25,8 +25,10 @@ namespace Proggy.Core
             {
                 var providers = new ISampleProvider[infos.Length];
 
-                for (var i = 0; i < infos.Length; i++)
+                Parallel.For(0, infos.Length, (i) => 
+                {
                     providers[i] = CachedSound.FromSampleProvider(BuildBar(infos[i], settings));
+                });              
 
                 var track = new ConcatenatingSampleProvider(providers);
 

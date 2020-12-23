@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="650"
         xmlns:controls="clr-namespace:Proggy.Controls"
+        xmlns:b="clr-namespace:Proggy.Controls.Behaviors"
         xmlns:vm="clr-namespace:Proggy.ViewModels"
         xmlns:m="clr-namespace:Proggy.ViewModels.CollectionItems"
         xmlns:infrastructure="clr-namespace:Proggy.Infrastructure"
@@ -81,12 +82,25 @@
                       <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="false">
                         <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
                       </ia:DataTriggerBehavior>
-                    
+                      
                     </i:Interaction.Behaviors>
                   
-                    <Button Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" CommandParameter="{Binding}" Width="{StaticResource ResourceKey=CellSize}" Height="{StaticResource ResourceKey=CellSize}">
-                    
+                    <Button x:Name="BarBtn"
+                            Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}"
+                            CommandParameter="{Binding}" 
+                            Width="{StaticResource ResourceKey=CellSize}"
+                            Height="{StaticResource ResourceKey=CellSize}">
+                      
+                      <i:Interaction.Behaviors>
+
+                        <b:CtrlClickBehavior Button="{Binding #BarBtn}">
+                          <ia:InvokeCommandAction Command="{Binding $parent[ItemsRepeater].DataContext.Select}" CommandParameter="{Binding}" />
+                        </b:CtrlClickBehavior>
+
+                      </i:Interaction.Behaviors>
+                      
                       <Button.ContextMenu>
+                        
                         <ContextMenu IsVisible="{Binding $parent[ItemsRepeater].DataContext.CanUseContextMenu}">                                                
                           
                           <MenuItem Header="Begin selection" 
@@ -107,6 +121,7 @@
                           </MenuItem>
 
                         </ContextMenu>
+                        
                       </Button.ContextMenu>
                     
                       <Grid RowDefinitions="*, 2*">
@@ -121,11 +136,18 @@
                 </DataTemplate>
               
                 <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
+                  
                   <material:Card>
-                    <Button HotKey="Ctrl+A" Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}" Width="{StaticResource ResourceKey=CellSize}" Height="{StaticResource ResourceKey=CellSize}">
+                    
+                    <Button HotKey="Ctrl+A"
+                            Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}"
+                            Width="{StaticResource ResourceKey=CellSize}"
+                            Height="{StaticResource ResourceKey=CellSize}">
                       <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
                     </Button>
+                    
                   </material:Card>
+                  
                 </DataTemplate>
               
               </infrastructure:TypedElementFactory.Templates>

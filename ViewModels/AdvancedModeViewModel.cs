@@ -210,6 +210,14 @@ namespace Proggy.ViewModels
             SetNewTrackName();
         }
 
+        public void Select(BarInfoGridItem item)
+        {
+            if (Selection.IsSelecting)
+                EndSelection(item);
+            else
+                BeginSelection(item);
+        }
+
         public void BeginSelection(BarInfoGridItem item)
         {
             DeselectAll();
