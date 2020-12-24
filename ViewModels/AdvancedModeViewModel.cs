@@ -220,7 +220,7 @@ namespace Proggy.ViewModels
 
         public void BeginSelection(BarInfoGridItem item)
         {
-            DeselectAll();
+            ClearSelection();
 
             item.IsSelected = true;
 
@@ -246,6 +246,27 @@ namespace Proggy.ViewModels
                 var bar = (BarInfoGridItem)Items[i];
                 bar.IsSelected = true;
             }
+        }
+
+        public void ClearSelection()
+        {
+            if(Selection.HasSelection)
+            {
+                var range = Selection.Range;
+
+                for (var i = range.Start; i <= range.End; i++)
+                {
+                    var bar = (BarInfoGridItem)Items[i];
+                    bar.IsSelected = false;
+                }
+            }
+            else if(Selection.IsSelecting)
+            {
+                var bar = (BarInfoGridItem)Items[Selection.Range.Start];
+                bar.IsSelected = false;
+            }
+
+            Selection.RemoveSelection();
         }
 
         public override void OnClosing()

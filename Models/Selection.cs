@@ -40,8 +40,10 @@ namespace Proggy.Models
 
         public void Finalize(int index)
         {
+#if DEBUG
             if (IsSelecting == false)
                 throw new InvalidOperationException($"Must call {nameof(Begin)} first.");
+#endif
 
             range.End = index;
 

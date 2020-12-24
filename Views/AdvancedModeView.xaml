@@ -8,6 +8,7 @@
         xmlns:vm="clr-namespace:Proggy.ViewModels"
         xmlns:m="clr-namespace:Proggy.ViewModels.CollectionItems"
         xmlns:infrastructure="clr-namespace:Proggy.Infrastructure"
+        xmlns:converters="clr-namespace:Proggy.Infrastructure.Converters"             
         xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
         xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
         xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
@@ -115,10 +116,21 @@
                                     CommandParameter="{Binding}">
                           </MenuItem>
 
+                          <MenuItem Header="Clear selection"                                  
+                                    Command="{Binding $parent[ItemsRepeater].DataContext.ClearSelection}">
+                            
+                            <MenuItem.IsVisible>
+                              <MultiBinding Converter="{x:Static converters:BoolConverters.Or}">
+                                <Binding Path="$parent[ItemsRepeater].DataContext.Selection.IsSelecting" />
+                                <Binding Path="$parent[ItemsRepeater].DataContext.Selection.HasSelection" />
+                              </MultiBinding>
+                            </MenuItem.IsVisible>
+                            
+                          </MenuItem>
+
                           <MenuItem Header="Delete" 
                                     Command="{Binding $parent[ItemsRepeater].DataContext.Delete}" 
-                                    CommandParameter="{Binding}">                          
-                          </MenuItem>
+                                    CommandParameter="{Binding}"/>                          
 
                         </ContextMenu>
                         
