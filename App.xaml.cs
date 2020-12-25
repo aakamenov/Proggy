@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Markup.Xaml;
@@ -7,6 +8,7 @@ using Material.Styles.Themes.Base;
 using Akavache;
 using Proggy.Views;
 using Proggy.Models;
+using Proggy.Infrastructure;
 
 namespace Proggy
 {
@@ -30,7 +32,14 @@ namespace Proggy
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow();
+                var window = new MainWindow()
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
+
+                desktop.MainWindow = window;
+
+                WindowNavigation.PushWindow(window);
             }
 
             var settings = await UserSettings.Get();
@@ -38,6 +47,7 @@ namespace Proggy
 
             base.OnFrameworkInitializationCompleted();
         }
+
         private void OnThemeChanged(object sender, ThemeChangedEventArgs e)
         {
             SetThemeColors(e.NewTheme);

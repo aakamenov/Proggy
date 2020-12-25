@@ -1,9 +1,8 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Interactivity;
 using Avalonia.Xaml.Interactivity;
 using Avalonia.Controls;
-using Avalonia.Input;
+using Proggy.Infrastructure;
 
 namespace Proggy.Controls.Behaviors
 {
@@ -11,8 +10,6 @@ namespace Proggy.Controls.Behaviors
     {
         public static readonly StyledProperty<Button> ButtonProperty =
             AvaloniaProperty.Register<CtrlClickBehavior, Button>(nameof(Button));
-
-        private bool ctrlPressed;
 
         public Button Button
         {
@@ -26,25 +23,11 @@ namespace Proggy.Controls.Behaviors
                 return;
 
             Button.Click += OnButtonClick;
-            Button.KeyDown += OnButtonKeyDown;
-            Button.KeyUp += OnButtonKeyUp;
-        }
-
-        private void OnButtonKeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.LeftCtrl)
-                ctrlPressed = false;
-        }
-
-        private void OnButtonKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.LeftCtrl)
-                ctrlPressed = true;
         }
 
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {
-            if (ctrlPressed)
+            if (WindowNavigation.CurrentWindowInput.IsCtrlPressed)
             {
                 e.Handled = true; //Override the click event
                 Interaction.ExecuteActions(Button, Actions, e);

@@ -14,6 +14,15 @@ namespace Proggy.Infrastructure
 {
     public static class WindowNavigation
     {
+        public static WindowInput CurrentWindowInput => windowInputs.Count > 0 ? windowInputs.Peek() : null;
+
+        private static readonly Stack<WindowInput> windowInputs;
+
+        static WindowNavigation()
+        {
+            windowInputs = new Stack<WindowInput>();
+        }
+
         public static async Task<TViewModel> ShowDialogAsync<TViewModel>(Func<TViewModel> builder) where TViewModel : ViewModelBase
         {
             var vm = builder();
@@ -38,10 +47,15 @@ namespace Proggy.Infrastructure
             }
 
             var window = Activator.CreateInstance(windowType) as Window;
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.DataContext = vm;
+
+            PushWindow(window);
             
             var lifeTime = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             await window.ShowDialog(lifeTime.MainWindow);
+
+            PopWindow();
             
             return vm;
         }
@@ -67,6 +81,16 @@ namespace Proggy.Infrastructure
             {
                 return new AlertDialogViewModel(message, title: title, isYesNo: true);
             });
+        }
+
+        public static void PushWindow(Window window)
+        {
+            windowInputs.Push(new WindowInput(window));
+        }
+
+        public static void PopWindow()
+        {
+            windowInputs.Pop();
         }
     }
 }
