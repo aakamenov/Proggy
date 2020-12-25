@@ -5,9 +5,10 @@ using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
 using Proggy.Models;
-using ReactiveUI;
 using Proggy.ViewModels.CollectionItems;
+using ReactiveUI;
 using NAudio.Wave;
+using Avalonia.Threading;
 
 namespace Proggy.ViewModels
 {
@@ -125,9 +126,13 @@ namespace Proggy.ViewModels
             AudioPlayer.Instance.PlaybackStopped -= OnPlaybackStopped;
         }
 
-        private void OnPlaybackStopped(object sender, EventArgs e)
+        private async void OnPlaybackStopped(object sender, EventArgs e)
         {
-            MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
+            await Dispatcher.UIThread.InvokeAsync(() => 
+            {
+                MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
+            });
+
             PlayButtonText = "Play";
         }
     }
