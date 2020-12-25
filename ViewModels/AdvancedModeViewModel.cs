@@ -57,6 +57,8 @@ namespace Proggy.ViewModels
         private bool canUseContextMenu;
         private bool pendingChanges;
         private int currentItemIndex;
+        private int firstItemIndex;
+        private int lastItemIndex;
         private string trackName;
         private AccurateTimer timer;
 
@@ -250,23 +252,7 @@ namespace Proggy.ViewModels
 
         public void ClearSelection()
         {
-            if(Selection.HasSelection)
-            {
-                var range = Selection.Range;
-
-                for (var i = range.Start; i <= range.End; i++)
-                {
-                    var bar = (BarInfoGridItem)Items[i];
-                    bar.IsSelected = false;
-                }
-            }
-            else if(Selection.IsSelecting)
-            {
-                var bar = (BarInfoGridItem)Items[Selection.Range.Start];
-                bar.IsSelected = false;
-            }
-
-            Selection.RemoveSelection();
+            ApplySelection(false, true);
         }
 
         public override void OnClosing()
@@ -288,25 +274,96 @@ namespace Proggy.ViewModels
 
         private async Task<ISampleProvider> BuildClickTrackAsync()
         {
-            var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
+            void PopulateArray(int start, int end, BarInfo[] array)
+            {
+                var index = 0;
+
+                for (var i = start; i < end; i++)
+                {
+                    var bar = (BarInfoGridItem)Items[i];
+                    array[index] = bar.BarInfo;
+
+                    index++;
+                }
+            }
+
+            BarInfo[] infos = null;
+
+            if(Selection.HasSelection)
+            {
+                var range = Selection.Range;
+                infos = new BarInfo[range.End - range.Start + 1];
+
+                PopulateArray(range.Start, range.End + 1, infos);
+            }
+            else if(Selection.IsSelecting) //Play from the selected bar to the end
+            {
+                var range = Selection.Range;
+                infos = new BarInfo[Items.Count - range.Start - 1];
+
+                PopulateArray(range.Start, Items.Count - 1, infos);
+            }
+            else
+                infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
+
             var settings = await UserSettings.Get();
 
             return await ClickTrackBuilder.BuildClickTrackAsync(infos, settings.ClickSettings, precount, loop);
+        }
+
+        private void ApplySelection(bool select, bool removeSelection)
+        {
+            if (Selection.HasSelection)
+            {
+                var range = Selection.Range;
+
+                for (var i = range.Start; i <= range.End; i++)
+                {
+                    var bar = (BarInfoGridItem)Items[i];
+                    bar.IsSelected = select;
+                }
+            }
+            else if (Selection.IsSelecting)
+            {
+                var bar = (BarInfoGridItem)Items[Selection.Range.Start];
+                bar.IsSelected = select;
+            }
+
+            if (removeSelection)
+                Selection.RemoveSelection();
         }
 
         private void OnMetronomePlaybackStateChanged(MetronomePlaybackStateChanged msg)
         {
             if (msg.State == MetronomePlaybackState.Playing)
             {
+                ApplySelection(false, false);
+
                 Items.RemoveAt(Items.Count - 1); //Remove add button
 
                 CanUseContextMenu = false;
 
-                DeselectAll();
-
                 if (Items.Count > 1)
                 {
-                    currentItemIndex = 0;
+                    if(Selection.HasSelection)
+                    {
+                        var range = Selection.Range;
+
+                        firstItemIndex = range.Start;
+                        lastItemIndex = range.End;
+                    }
+                    else if(Selection.IsSelecting)
+                    {
+                        firstItemIndex = Selection.Range.Start;
+                        lastItemIndex = Items.Count - 1;
+                    }
+                    else
+                    {
+                        firstItemIndex = 0;
+                        lastItemIndex = Items.Count - 1;
+                    }
+
+                    currentItemIndex = firstItemIndex;
 
                     if (precount)
                     {
@@ -321,15 +378,22 @@ namespace Proggy.ViewModels
             }
             else
             {
+                if (Items.Count > 1)
+                {
+                    for (var i = 0; i < Items.Count; i++)
+                    {
+                        var bar = (BarInfoGridItem)Items[i];
+                        bar.IsSelected = false;
+                    }
+
+                    timer.Stop();
+                }
+
+                ApplySelection(true, false);
+
                 Items.Add(new AddButtonGridItem());
 
                 CanUseContextMenu = true;
-
-                if (Items.Count > 1)
-                {
-                    timer.Stop();
-                    DeselectAll();
-                }
             }
         }
 
@@ -338,19 +402,19 @@ namespace Proggy.ViewModels
             var current = (BarInfoGridItem)Items[currentItemIndex];
             current.IsSelected = true;
 
-            if (currentItemIndex > 0)
+            if (currentItemIndex > firstItemIndex)
             {
                 var previous = (BarInfoGridItem)Items[currentItemIndex - 1];
                 previous.IsSelected = false;
             }
-            else if (currentItemIndex == 0)
+            else if (currentItemIndex == firstItemIndex)
             {
-                var lastItem = (BarInfoGridItem)Items[Items.Count - 1];
+                var lastItem = (BarInfoGridItem)Items[lastItemIndex];
                 lastItem.IsSelected = false;
             }
 
-            if (currentItemIndex == Items.Count - 1)
-                currentItemIndex = 0;
+            if (currentItemIndex == lastItemIndex)
+                currentItemIndex = firstItemIndex;
             else
                 currentItemIndex++;
 
@@ -359,14 +423,6 @@ namespace Proggy.ViewModels
             //This should be done last
             if(currentItemIndex % MaxRowsOrCols == 1)
                 await Dispatcher.UIThread.InvokeAsync(() => ScrollToBar(currentItemIndex));
-        }
-
-        private void DeselectAll()
-        {
-            foreach (var item in Items.OfType<BarInfoGridItem>())
-                item.IsSelected = false;
-
-            Selection.RemoveSelection();
         }
 
         private void SetNewTrackName()
