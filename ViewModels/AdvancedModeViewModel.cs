@@ -21,6 +21,14 @@ namespace Proggy.ViewModels
 
         public ObservableCollection<ClickTrackGridItem> Items { get; }
 
+        public ListItem<float>[] PlaybackSpeeds { get; }
+
+        public ListItem<float> SelectedPlaybackSpeed
+        {
+            get => selectedPlaybackSpeed;
+            set => this.RaiseAndSetIfChanged(ref selectedPlaybackSpeed, value);
+        }
+
         public Action<int> ScrollToBar { get; set; }
 
         public bool Loop
@@ -61,9 +69,20 @@ namespace Proggy.ViewModels
         private int lastItemIndex;
         private string trackName;
         private AccurateTimer timer;
+        private ListItem<float> selectedPlaybackSpeed;
 
         public AdvancedModeViewModel()
         {
+            PlaybackSpeeds = new ListItem<float>[(110 - ClickSettings.MinPlaybackSpeedPercent) / 10];
+
+            for (var i = 0; i < PlaybackSpeeds.Length; i++)
+            {
+                var value = (ClickSettings.MinPlaybackSpeedPercent + (i * 10));
+                PlaybackSpeeds[PlaybackSpeeds.Length - 1 - i] = new ListItem<float>($"{value}%", value);
+            }
+
+            selectedPlaybackSpeed = PlaybackSpeeds.First();
+
             GlobalControls = new GlobalControlsViewModel(BuildClickTrackAsync, MetronomeMode.Advanced);
             Selection = new Selection();
 
@@ -268,7 +287,7 @@ namespace Proggy.ViewModels
 
             var result = await WindowNavigation.PromptAsync("Do you wish to save your track?", "Save?");
 
-            if (result.Result == DialogAction.OK)
+            if (result == DialogAction.OK)
                 await Save();
         }
 
@@ -307,6 +326,7 @@ namespace Proggy.ViewModels
                 infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
 
             var settings = await UserSettings.Get();
+            settings.ClickSettings.PlaybackSpeedPercent = SelectedPlaybackSpeed.Value;
 
             return await ClickTrackBuilder.BuildClickTrackAsync(infos, settings.ClickSettings, precount, loop);
         }
@@ -368,7 +388,9 @@ namespace Proggy.ViewModels
                     if (precount)
                     {
                         var first = (BarInfoGridItem)Items.First();
-                        timer.Interval = new BarInfo(first.BarInfo.Tempo, 4, 4).Interval * 4;
+
+                        timer.Interval = new BarInfo(first.BarInfo.Tempo, 4, 4)
+                            .GetInterval(SelectedPlaybackSpeed.Value) * 4;
                     }
                     else
                         timer.Interval = 0;
@@ -418,7 +440,7 @@ namespace Proggy.ViewModels
             else
                 currentItemIndex++;
 
-            timer.Interval = current.BarInfo.Interval * current.BarInfo.Beats;
+            timer.Interval = current.BarInfo.GetInterval(SelectedPlaybackSpeed.Value) * current.BarInfo.Beats;
 
             //This should be done last
             if(currentItemIndex % MaxRowsOrCols == 1)

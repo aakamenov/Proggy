@@ -22,7 +22,7 @@ namespace Proggy.ViewModels
 
         private ViewModelBase currentView;
         private (short, short) basicSize = (350, 250);
-        private (short, short) advancedSize = (750, 650);
+        private (short, short) advancedSize = (780, 680);
 
         public MainWindowViewModel()
         {

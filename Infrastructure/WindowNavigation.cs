@@ -75,12 +75,14 @@ namespace Proggy.Infrastructure
             });
         }
 
-        public static async Task<AlertDialogViewModel> PromptAsync(string message, string title = "Prompt")
+        public static async Task<DialogAction> PromptAsync(string message, string title = "Prompt")
         {
-            return await ShowDialogAsync(() => 
+            var vm = await ShowDialogAsync(() => 
             {
                 return new AlertDialogViewModel(message, title: title, isYesNo: true);
             });
+
+            return vm.Result;
         }
 
         public static void PushWindow(Window window)

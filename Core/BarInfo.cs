@@ -20,18 +20,7 @@
         }
         public byte NoteLength { get; }
         public short Tempo { get; }
-        public int Interval 
-        { 
-            get
-            {
-                if (!interval.HasValue)
-                    CalculateInterval();
 
-                return interval.Value;
-            }
-        }
-
-        private int? interval;
         private bool[] accents;
 
         public BarInfo(short tempo, byte beats, byte noteLength)
@@ -41,12 +30,16 @@
             Beats = beats;
 
             accents = null;
-            interval = null;
         }
 
-        private void CalculateInterval()
+        public int GetInterval(float percentage = 100)
         {
-            interval = 60000 / Tempo;
+            var newTempo = Tempo;
+
+            if (percentage < 100)
+                newTempo = (byte)(percentage / 100f * newTempo);
+
+            var interval = 60000 / newTempo;
 
             if (NoteLength != 4)
             {
@@ -55,6 +48,8 @@
                 else
                     interval *= NoteLength;
             }
+
+            return interval;
         }
     }
 }

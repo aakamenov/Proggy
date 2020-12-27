@@ -60,9 +60,8 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref secondaryColor, value);
         }
 
-        public TimeSignatureControlsViewModel TimeSignatureControls => timeSignatureControls;
+        public TimeSignatureControlsViewModel TimeSignatureControls { get; }
 
-        private readonly TimeSignatureControlsViewModel timeSignatureControls;
         private readonly PaletteHelper paletteHelper;
 
         private double accentClickFreq;
@@ -78,7 +77,7 @@ namespace Proggy.ViewModels
 
             paletteHelper = new PaletteHelper();
 
-            timeSignatureControls = new TimeSignatureControlsViewModel()
+            TimeSignatureControls = new TimeSignatureControlsViewModel()
             {
                 SelectedBeats = settings.ClickSettings.PrecountBarBeats,
                 SelectedNoteLength = settings.ClickSettings.PrecountBarNoteLength

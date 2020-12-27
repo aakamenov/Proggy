@@ -8,22 +8,18 @@ namespace Proggy.ViewModels
 {
     public class BasicModeViewModel : ViewModelBase
     {
-        public GlobalControlsViewModel GlobalControls => globalControls;
-        public TimeSignatureControlsViewModel TimeSignatureControls => timeSignatureControls;
-
-        private readonly GlobalControlsViewModel globalControls;
-        private readonly TimeSignatureControlsViewModel timeSignatureControls;
+        public GlobalControlsViewModel GlobalControls { get; }
+        public TimeSignatureControlsViewModel TimeSignatureControls { get; }
 
         public BasicModeViewModel()
-        {        
-            globalControls = new GlobalControlsViewModel(BuildPulse, MetronomeMode.Basic);
-            timeSignatureControls = new TimeSignatureControlsViewModel();
-           
+        {
+            GlobalControls = new GlobalControlsViewModel(BuildPulse, MetronomeMode.Basic);
+            TimeSignatureControls = new TimeSignatureControlsViewModel();        
         }
 
         public override void OnClosing()
         {
-            globalControls.OnClosing();
+            GlobalControls.OnClosing();
         }
 
         private async Task<ISampleProvider> BuildPulse()

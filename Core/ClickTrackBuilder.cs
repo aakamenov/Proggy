@@ -64,7 +64,9 @@ namespace Proggy.Core
         {
             var providers = new ISampleProvider[info.Beats];
 
-            var silenceInterval = TimeSpan.FromMilliseconds(info.Interval - SoundDurationMs);
+            var interval = info.GetInterval(settings.PlaybackSpeedPercent);
+
+            var silenceInterval = TimeSpan.FromMilliseconds(interval - SoundDurationMs);
             
             for (var i = 0; i < info.Beats; i++)
             {
