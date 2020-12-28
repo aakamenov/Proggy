@@ -1,14 +1,12 @@
 ﻿using ReactiveUI;
+using Proggy.Core;
 
 namespace Proggy.ViewModels
 {
     public class TimeSignatureControlsViewModel : ViewModelBase
     {
-        const byte MAX_BEATS = 32;
-        readonly byte[] noteLengths = { 2, 4, 8, 16, 32 };
-
-        public byte[] Beats => beats;
-        public byte[] NoteLengths => noteLengths;
+        public byte[] Beats { get; }
+        public byte[] NoteLengths => BarInfo.NoteLengths;
 
         public byte SelectedBeats
         {
@@ -31,18 +29,19 @@ namespace Proggy.ViewModels
         private short tempoNumericBoxValue;
         private byte selectedNoteLength;
         private byte selectedBeats;
-        private byte[] beats;
 
         public TimeSignatureControlsViewModel()
         {
-            beats = new byte[MAX_BEATS - 1];
+            Beats = new byte[BarInfo.MaxBeats - 1];
 
-            for (byte i = 2; i <= MAX_BEATS; i++)
-                beats[i - 2] = i;
+            for (byte i = 2; i <= BarInfo.MaxBeats; i++)
+                Beats[i - 2] = i;
 
-            selectedBeats = 4;
-            selectedNoteLength = 4;
-            tempoNumericBoxValue = 120;
+            var info = BarInfo.Default;
+
+            selectedBeats = info.Beats;
+            selectedNoteLength = info.NoteLength;
+            tempoNumericBoxValue = info.Tempo;
         }
     }
 }

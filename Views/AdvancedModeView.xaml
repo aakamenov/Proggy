@@ -159,7 +159,7 @@
                   
                   <material:Card>
                     
-                    <Button HotKey="Ctrl+A"
+                    <Button HotKey="Ctrl+B"
                             Focusable="False"
                             Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}"
                             Width="{StaticResource ResourceKey=CellSize}"

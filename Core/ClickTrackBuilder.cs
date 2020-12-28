@@ -11,6 +11,8 @@ namespace Proggy.Core
 
         public static ISampleProvider BuildSinglePulse(in BarInfo info, ClickSettings settings)
         {
+            settings.PlaybackSpeedPercent = 100;
+
             var track = BuildBar(info, settings);
             return new LoopingSampleProvider(CachedSound.FromSampleProvider(track));
         }

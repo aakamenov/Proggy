@@ -1,7 +1,14 @@
-﻿namespace Proggy.Core
+﻿using System.Linq;
+
+namespace Proggy.Core
 {
     public struct BarInfo
     {
+        public const short MaxTempo = 400;
+        public const byte MaxBeats = 32;
+
+        public static readonly byte[] NoteLengths = { 2, 4, 8, 16, 32 };
+
         public static readonly BarInfo Default = new BarInfo(120, 4, 4);
 
         public byte Beats { get; }
@@ -25,9 +32,9 @@
 
         public BarInfo(short tempo, byte beats, byte noteLength)
         {
-            NoteLength = noteLength;
-            Tempo = tempo;
-            Beats = beats;
+            NoteLength = NoteLengths.Contains(noteLength) ? noteLength : NoteLengths[1];
+            Tempo = tempo > MaxTempo ? MaxTempo : tempo;
+            Beats = beats > MaxBeats ? MaxBeats : beats;
 
             accents = null;
         }
@@ -37,7 +44,7 @@
             var newTempo = Tempo;
 
             if (percentage < 100)
-                newTempo = (byte)(percentage / 100f * newTempo);
+                newTempo = (short)(percentage / 100f * newTempo);
 
             var interval = 60000 / newTempo;
 
