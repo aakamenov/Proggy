@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Proggy
+﻿namespace Proggy
 {
     public static class Constants
     {

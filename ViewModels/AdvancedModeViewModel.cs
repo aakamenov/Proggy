@@ -10,7 +10,10 @@ using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
 using Proggy.ViewModels.CollectionItems;
 using ReactiveUI;
+using Avalonia;
 using Avalonia.Threading;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using NAudio.Wave;
 
 namespace Proggy.ViewModels
@@ -229,6 +232,44 @@ namespace Proggy.ViewModels
             Items.Clear();
             InitializeTrack();
             SetNewTrackName();
+        }
+
+        public async void Export()
+        {
+            var dialog = new SaveFileDialog()
+            {
+                Title = "Export"
+            };
+
+            var filter = new FileDialogFilter()
+            {
+                Name = "WAVE"
+            };
+            filter.Extensions.Add("wav");
+
+            dialog.Filters.Add(filter);
+
+            var lifeTime = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+
+            var path = await dialog.ShowAsync(lifeTime.MainWindow);
+
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var oldValue = loop;
+
+            loop = false;
+            var track = await BuildClickTrackAsync();
+            loop = oldValue;
+
+            try
+            {
+                WaveFileWriter.CreateWaveFile16(path, track);
+            }
+            catch(Exception e)
+            {
+                await WindowNavigation.ShowErrorMessageAsync(e);
+            }
         }
 
         public void Select(BarInfoGridItem item)

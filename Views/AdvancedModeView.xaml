@@ -29,8 +29,7 @@
         <MenuItem Header="Open (Ctrl+O)" HotKey="Ctrl+O" Command="{Binding Open}"/>        
         <MenuItem Header="Save (Ctrl+S)" HotKey="Ctrl+S" Command="{Binding Save}" />       
         <MenuItem Header="Export">
-          <MenuItem Header="WAV"/>
-          <MenuItem Header="MP3"/>
+          <MenuItem Header="WAV" Command="{Binding Export}"/>
         </MenuItem>
         
       </MenuItem>
@@ -159,7 +158,7 @@
                   
                   <material:Card>
                     
-                    <Button HotKey="Ctrl+B"
+                    <Button HotKey="Ctrl+D"
                             Focusable="False"
                             Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}"
                             Width="{StaticResource ResourceKey=CellSize}"

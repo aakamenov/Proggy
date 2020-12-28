@@ -31,7 +31,7 @@ namespace Proggy.Core
 
             return new CachedSound(data.ToArray(), sampleProvider.WaveFormat);
         }
-
+        /*
         public static CachedSound FromFileName(string fileName)
         {
             using var audioFileReader = new AudioFileReader(fileName);
@@ -48,7 +48,7 @@ namespace Proggy.Core
 
             return new CachedSound(file.ToArray(), audioFileReader.WaveFormat);
         }
-
+        */
         public int Read(float[] buffer, int offset, int count)
         {
             var availableSamples = Data.Length - Position;
