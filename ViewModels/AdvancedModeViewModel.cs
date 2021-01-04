@@ -76,11 +76,11 @@ namespace Proggy.ViewModels
 
         public AdvancedModeViewModel()
         {
-            PlaybackSpeeds = new ListItem<float>[(110 - ClickSettings.MinPlaybackSpeedPercent) / 10];
+            PlaybackSpeeds = new ListItem<float>[(110 - ClickTrackBuilder.MinPlaybackSpeedPercent) / 10];
 
             for (var i = 0; i < PlaybackSpeeds.Length; i++)
             {
-                var value = (ClickSettings.MinPlaybackSpeedPercent + (i * 10));
+                var value = ClickTrackBuilder.MinPlaybackSpeedPercent + (i * 10);
                 PlaybackSpeeds[PlaybackSpeeds.Length - 1 - i] = new ListItem<float>($"{value}%", value);
             }
 
@@ -367,9 +367,14 @@ namespace Proggy.ViewModels
                 infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
 
             var settings = await UserSettings.Get();
-            settings.ClickSettings.PlaybackSpeedPercent = SelectedPlaybackSpeed.Value;
 
-            return await ClickTrackBuilder.BuildClickTrackAsync(infos, settings.ClickSettings, precount, loop);
+            return await Task.Run(() => ClickTrackBuilder.BuildClickTrack(
+                infos, 
+                settings.ClickSettings,
+                SelectedPlaybackSpeed.Value,
+                precount,
+                loop)
+            );
         }
 
         private void ApplySelection(bool select, bool removeSelection)
