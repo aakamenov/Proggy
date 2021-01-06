@@ -11,14 +11,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Proggy.Views
+namespace Proggy.Controls
 {
     /// <summary>
-    /// Interaction logic for BasicModeView.xaml
+    /// Interaction logic for OpenClickTrackDialog.xaml
     /// </summary>
-    public partial class BasicModeView : Page
+    public partial class OpenClickTrackDialog : UserControl
     {
-        public BasicModeView()
+        public OpenClickTrackDialog()
         {
             InitializeComponent();
         }

@@ -1,0 +1,214 @@
+﻿<Window x:Class="Proggy.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialTheme="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+        xmlns:converters="clr-namespace:Proggy.Infrastructure.Converters"
+        xmlns:controls="clr-namespace:Proggy.Controls"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{material:MaterialDesignFont}" 
+        mc:Ignorable="d"        
+        Height="500"
+        Width="460"
+        ResizeMode="NoResize"
+        Title="Settings">
+
+    <Window.Resources>
+
+        <Thickness x:Key="DescMargin">0,10,5,0</Thickness>
+        <Thickness x:Key="WidgetMargin">0,10,0,0</Thickness>
+
+        <converters:ThemeToBoolConverter x:Key="ThemeToBool" />
+        <converters:ColorToSolidBrushConverter x:Key="ColorToBrush" />
+
+        <materialTheme:BaseTheme x:Key="LightThemeMode">Light</materialTheme:BaseTheme>
+        <materialTheme:BaseTheme x:Key="DarkThemeMode">Dark</materialTheme:BaseTheme>
+
+        <DataTemplate x:Key="ColorComboBoxTemplate">
+            <Canvas Height="30"
+                    Background="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},
+                        Path=DataContext,
+                        Converter={StaticResource ResourceKey=ColorToBrush}}">
+            </Canvas>
+        </DataTemplate>
+
+    </Window.Resources>
+
+    <TabControl Style="{StaticResource MaterialDesignNavigatilRailTabControl}" material:ColorZoneAssist.Mode="PrimaryMid">
+        <TabItem Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+
+            <TabItem.Header>
+                <TextBlock Style="{StaticResource TabText}">General</TextBlock>
+            </TabItem.Header>
+
+            <ScrollViewer>
+
+                <StackPanel Margin="10,10,10,10">
+
+                    <TextBlock Style="{StaticResource Title}">Click Sound</TextBlock>
+                    <material:Card>
+
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Wave type:</TextBlock>
+                            <ComboBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding WaveTypes}" SelectedItem="{Binding SelectedWaveType}"/>
+
+                            <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Accent click frequency:</TextBlock>
+                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="1" Grid.Column="1">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Slider Grid.Column="0" Minimum="1000" Maximum="10000" TickFrequency="1" Value="{Binding AccentClickFreq}" />
+                                <TextBlock Grid.Column="1" Text="{Binding AccentClickFreqText}" />
+                            </Grid>
+
+                            <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Click frequency:</TextBlock>
+                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="2" Grid.Column="1">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Slider Grid.Column="0" Minimum="1000" Maximum="10000" TickFrequency="1" Value="{Binding ClickFreq}" />
+                                <TextBlock Grid.Column="1" Text="{Binding ClickFreqText}" />
+                            </Grid>
+
+                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="3" Grid.ColumnSpan="2">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0" Content="Test Accent Click" Command="{Binding TestAccentClickCommand}" />
+                                <Button Grid.Column="1" Content="Test Click" Command="{Binding TestClickCommand}" />
+                            </Grid>
+
+                        </Grid>
+                    </material:Card>
+
+                    <TextBlock Style="{StaticResource Title}">Theme</TextBlock>
+                    <material:Card>
+
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="0" Grid.ColumnSpan="2">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <RadioButton Grid.Column="0"
+                                     HorizontalAlignment="Center"
+                                     GroupName="Theme"
+                                     Command="{Binding ChangeThemeCommand}"
+                                     CommandParameter="{StaticResource ResourceKey=LightThemeMode}"
+                                     IsChecked="{Binding ThemeMode, Mode=OneWay, Converter={StaticResource ResourceKey=ThemeToBool}, ConverterParameter={StaticResource LightThemeMode}}"
+                                     Content="Light">
+                                </RadioButton>
+
+                                <RadioButton Grid.Column="1"
+                                     HorizontalAlignment="Center"
+                                     GroupName="Theme"
+                                     Command="{Binding ChangeThemeCommand}"
+                                     CommandParameter="{StaticResource ResourceKey=DarkThemeMode}"
+                                     IsChecked="{Binding ThemeMode, Mode=OneWay, Converter={StaticResource ResourceKey=ThemeToBool}, ConverterParameter={StaticResource DarkThemeMode}}"
+                                     Content="Dark">
+                                </RadioButton>
+
+                            </Grid>
+
+                            <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="0">Primary color:</TextBlock>
+                            <ComboBox Margin="{StaticResource WidgetMargin}" 
+                                      Grid.Row="1" 
+                                      Grid.Column="1" 
+                                      ItemsSource="{Binding PrimaryColors}" 
+                                      SelectedItem="{Binding PrimaryColor}" 
+                                      ItemTemplate="{StaticResource ColorComboBoxTemplate}">
+                            </ComboBox>
+
+                            <TextBlock VerticalAlignment="Center" Grid.Row="2" Grid.Column="0">Accent color:</TextBlock>
+                            <ComboBox Margin="{StaticResource WidgetMargin}" 
+                                      Grid.Row="2" 
+                                      Grid.Column="1" 
+                                      ItemsSource="{Binding SecondaryColors}" 
+                                      SelectedItem="{Binding SecondaryColor}" 
+                                      ItemTemplate="{StaticResource ColorComboBoxTemplate}">
+                            </ComboBox>
+
+                        </Grid>
+                    </material:Card>
+
+                </StackPanel>
+
+            </ScrollViewer>
+        </TabItem>
+
+        <TabItem Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+
+            <TabItem.Header>
+                <TextBlock Style="{StaticResource TabText}">Advanced Mode</TextBlock>
+            </TabItem.Header>
+
+            <ScrollViewer>
+                <StackPanel Margin="10,10,10,10">
+                    <TextBlock Style="{StaticResource Title}">Precount Measure</TextBlock>
+
+                    <material:Card>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock VerticalAlignment="Center">Time signature:</TextBlock>
+                            <controls:TimeSignatureControls Grid.Column="1" ShowTempoBox="False" DataContext="{Binding TimeSignatureControls}" />
+                        </Grid>
+
+                    </material:Card>
+
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
+    </TabControl>
+
+</Window>

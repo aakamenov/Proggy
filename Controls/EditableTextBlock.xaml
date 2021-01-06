@@ -1,13 +1,25 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl x:Class="Proggy.Controls.EditableTextBlock"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="50"
-             x:Class="Proggy.Controls.EditableTextBlock">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="300">
 
-  <StackPanel Orientation="Horizontal">
-    <TextBlock x:Name="TextBlock" Cursor="Hand" Classes="title" Text="{Binding $parent[UserControl].Text}" />
-    <TextBox x:Name="TextBox" Width="250" Text="{Binding $parent[UserControl].Text}" MaxLength="36"></TextBox>
-  </StackPanel>
+    <StackPanel Orientation="Horizontal">
+        <TextBlock x:Name="TextBlock"
+                   Cursor="Hand" 
+                   Style="{StaticResource Title}" 
+                   Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Text}"
+                   MouseDown="OnTextBlockMouseDown">
+        </TextBlock>
+        <TextBox x:Name="TextBox"
+                 Width="250"
+                 Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Text}"
+                 MaxLength="36"
+                 KeyDown="OnTextBoxKeyDown"
+                 LostFocus="OnTextBoxLostFocus">
+        </TextBox>
+    </StackPanel>
 
 </UserControl>

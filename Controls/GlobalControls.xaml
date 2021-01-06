@@ -1,21 +1,31 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl x:Class="Proggy.Controls.GlobalControls"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
-             x:Class="Proggy.Controls.GlobalControls">
-  <StackPanel Orientation="Vertical">
-    <StackPanel Orientation="Horizontal">
-      <ComboBox SelectedItem="{Binding SelectedMode}" Items="{Binding Modes}"></ComboBox>
-      <!--Focusable needs to be set to False, otherwise Space and Enter trigger the click event on those and mess the hotkey up -->
-      <Button IsEnabled="{Binding CanPlay}" Content="{Binding PlayButtonText}" Command="{Binding Toggle}" Focusable="False" HotKey="Space"></Button>
-      <Button Content="Settings" Command="{Binding Settings}" Focusable="False"></Button>
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <StackPanel Orientation="Vertical">
+
+        <StackPanel Orientation="Horizontal">
+            <ComboBox SelectedItem="{Binding SelectedMode}" ItemsSource="{Binding Modes}"></ComboBox>
+            <!--Focusable needs to be set to False, otherwise Space and Enter trigger the click event on those and mess the hotkey up -->
+            <Button IsEnabled="{Binding CanPlay}" Content="{Binding PlayButtonText}" Command="{Binding ToggleCommand}" Focusable="False"/>
+            <Button Content="Settings" Command="{Binding SettingsCommand}" Focusable="False"/>
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2.5*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock HorizontalAlignment="Center" Grid.Column="0">Volume:</TextBlock>
+            <Slider Grid.Column="1" Minimum="0" Maximum="1.0" TickFrequency="0.01" IsSnapToTickEnabled="True" Value="{Binding Volume}"></Slider>
+            <TextBlock Grid.Column="2" HorizontalAlignment="Center" Text="{Binding VolumeText}"></TextBlock>
+        </Grid>
+
     </StackPanel>
-    <Grid ColumnDefinitions="1*, 2.5*, 1*">
-      <TextBlock HorizontalAlignment="Center" Grid.Column="0">Volume: </TextBlock>
-      <Slider Grid.Column="1" Minimum="0" Maximum="1.0" TickFrequency="0.01" IsSnapToTickEnabled="True" Value="{Binding Volume}"></Slider>
-      <TextBlock Grid.Column="2" HorizontalAlignment="Center" Text="{Binding VolumeText}"></TextBlock>
-    </Grid>
-  </StackPanel>
 
 </UserControl>

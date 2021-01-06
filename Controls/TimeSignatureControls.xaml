@@ -1,14 +1,24 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl x:Class="Proggy.Controls.TimeSignatureControls"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Proggy.Controls.TimeSignatureControls">
-  
-  <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-    <ComboBox SelectedItem="{Binding SelectedBeats}" Items="{Binding Beats}"></ComboBox>
-    <ComboBox SelectedItem="{Binding SelectedNoteLength}" Items="{Binding NoteLengths}"></ComboBox>
-    <NumericUpDown IsVisible="{Binding $parent[UserControl].ShowTempoBox}" Value="{Binding TempoNumericBoxValue}" ClipValueToMinMax="True" Minimum="33" Maximum="300"/>
-  </StackPanel>
-  
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:converters="clr-namespace:Proggy.Infrastructure.Converters"
+             xmlns:local="clr-namespace:Proggy.Controls"
+             mc:Ignorable="d" 
+             d:DesignWidth="350" d:DesignHeight="250">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <ComboBox SelectedItem="{Binding SelectedBeats}" ItemsSource="{Binding Beats}"></ComboBox>
+        <ComboBox SelectedItem="{Binding SelectedNoteLength}" ItemsSource="{Binding NoteLengths}"></ComboBox>
+        <local:NumericUpDown Visibility="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=ShowTempoBox, Converter={StaticResource BoolToVis}}"
+                             Value="{Binding TempoNumericBoxValue}"
+                             Min="33"
+                             Max="300">
+        </local:NumericUpDown>
+    </StackPanel>
 </UserControl>

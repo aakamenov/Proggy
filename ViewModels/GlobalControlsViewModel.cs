@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 using Proggy.Core;
 using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
 using Proggy.Models;
+using Proggy.Infrastructure.Commands;
 using Proggy.ViewModels.CollectionItems;
 using ReactiveUI;
 using NAudio.Wave;
-using Avalonia.Threading;
 
 namespace Proggy.ViewModels
 {
@@ -18,7 +20,7 @@ namespace Proggy.ViewModels
         public ListItem<MetronomeMode> SelectedMode
         {
             get => selectedMode;
-            set =>this.RaiseAndSetIfChanged(ref selectedMode, value);
+            set => this.RaiseAndSetIfChanged(ref selectedMode, value);
         }
 
         public bool CanPlay
@@ -40,6 +42,9 @@ namespace Proggy.ViewModels
             get => playButtonText;
             set => this.RaiseAndSetIfChanged(ref playButtonText, value);
         }
+
+        public Command ToggleCommand { get; }
+        public Command SettingsCommand { get; }
 
         private string playButtonText;
         private float volume;
@@ -77,14 +82,14 @@ namespace Proggy.ViewModels
                 });
 
             AudioPlayer.Instance.PlaybackStopped += OnPlaybackStopped;
+
+            ToggleCommand = new Command(Toggle);
+            SettingsCommand = new Command(Settings);
         }
 
-        public async void Toggle()
+        public override void OnClosing()
         {
-            if (AudioPlayer.Instance.IsPlaying)
-                Stop();
-            else
-                await Play();
+            AudioPlayer.Instance.PlaybackStopped -= OnPlaybackStopped;
         }
 
         public async Task Play()
@@ -111,24 +116,30 @@ namespace Proggy.ViewModels
             PlayButtonText = "Play";
         }
 
-        public async void Settings()
+        private async void Toggle()
+        {
+            if (AudioPlayer.Instance.IsPlaying)
+                Stop();
+            else
+                await Play();
+        }
+
+        
+        private async void Settings()
         {
             Stop();
 
             var settings = await UserSettings.Get();
-            var result = await WindowNavigation.ShowDialogAsync(() => new SettingsDialogViewModel(settings));
+
+            var result = await WindowNavigation.OpenWindow(() => new SettingsWindowViewModel(settings));
 
             await result.UserSettings.Save();
         }
-
-        public override void OnClosing()
-        {
-            AudioPlayer.Instance.PlaybackStopped -= OnPlaybackStopped;
-        }
+        
 
         private async void OnPlaybackStopped(object sender, EventArgs e)
         {
-            await Dispatcher.UIThread.InvokeAsync(() => 
+            await Application.Current.Dispatcher.BeginInvoke(() =>
             {
                 MessageBus.Current.SendMessage(new MetronomePlaybackStateChanged(MetronomePlaybackState.Stopped));
             });

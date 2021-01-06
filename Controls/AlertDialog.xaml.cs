@@ -11,14 +11,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Proggy.Views
+namespace Proggy.Controls
 {
     /// <summary>
-    /// Interaction logic for BasicModeView.xaml
+    /// Interaction logic for AlertDialog.xaml
     /// </summary>
-    public partial class BasicModeView : Page
+    public partial class AlertDialog : UserControl
     {
-        public BasicModeView()
+        public AlertDialog()
         {
             InitializeComponent();
         }

@@ -4,24 +4,23 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
+using System.Windows;
 using Proggy.Core;
 using Proggy.Models;
 using Proggy.Infrastructure;
 using Proggy.Infrastructure.Events;
+using Proggy.Infrastructure.Commands;
 using Proggy.ViewModels.CollectionItems;
+using Proggy.ViewModels.Dialogs;
 using ReactiveUI;
-using Avalonia;
-using Avalonia.Threading;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using NAudio.Wave;
+using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
 
 namespace Proggy.ViewModels
 {
     public class AdvancedModeViewModel : ViewModelBase
     {
-        public const int MaxRowsOrCols = 5;
-
         public ObservableCollection<ClickTrackGridItem> Items { get; }
 
         public ListItem<float>[] PlaybackSpeeds { get; }
@@ -57,9 +56,22 @@ namespace Proggy.ViewModels
             set => this.RaiseAndSetIfChanged(ref canUseContextMenu, value);
         }
 
+        public bool IsDialogOpen { get; set; }
+
         public Selection Selection { get; }
 
         public GlobalControlsViewModel GlobalControls { get; }
+
+        public Command<BarInfoGridItem> OnItemClickedCommand { get; }
+        public Command<BarInfoGridItem> DeleteCommand { get; }
+        public Command<BarInfoGridItem> SelectCommand { get; }
+        public Command<BarInfoGridItem> BeginSelectionCommand { get; }
+        public Command<BarInfoGridItem> EndSelectionCommand { get; }
+        public Command SaveCommand { get; }
+        public Command NewCommand { get; }
+        public Command OpenCommand { get; }
+        public Command ExportCommand { get; }
+        public Command ClearSelectionCommand { get; }
 
         private IDisposable playbackChangedSub;
 
@@ -102,34 +114,70 @@ namespace Proggy.ViewModels
             timer = new AccurateTimer(UpdateCurrentBar);
 
             SetNewTrackName();
+
+            OnItemClickedCommand = new Command<BarInfoGridItem>(OnItemClicked);
+            DeleteCommand = new Command<BarInfoGridItem>(Delete);
+            SelectCommand = new Command<BarInfoGridItem>(Select);
+            BeginSelectionCommand = new Command<BarInfoGridItem>(BeginSelection);
+            EndSelectionCommand = new Command<BarInfoGridItem>(EndSelection);
+            ClearSelectionCommand = new Command(ClearSelection);
+            SaveCommand = new Command(Save);
+            NewCommand = new Command(New);
+            OpenCommand = new Command(Open);
+            ExportCommand = new Command(Export);
         }
 
-        public async void OnItemClicked(BarInfoGridItem item)
+        public override void OnClosing()
+        {
+            playbackChangedSub.Dispose();
+            GlobalControls.OnClosing();
+        }
+
+        public async Task PromptSave()
+        {
+            if (!pendingChanges)
+                return;
+
+            if(IsDialogOpen)
+                DialogHost.Close(null);
+
+            var result = await WindowNavigation.ShowDialog(
+                new AlertDialogViewModel("Do you wish to save your track?", true));
+
+            if (result.Action == DialogAction.OK)
+                SaveCommand.Execute(null);
+        }
+
+        private async void OnItemClicked(BarInfoGridItem item)
         {
             if (AudioPlayer.Instance.IsPlaying)
                 return;
-
-            pendingChanges = true;
 
             //Add button pressed
             if(item is null)
             {
                 var lastItem = (BarInfoGridItem)Items[Items.Count - 2];
                 Items.Insert(Items.Count - 1, new BarInfoGridItem(lastItem.BarInfo));
+
+                this.RaisePropertyChanged(nameof(CanUseContextMenu));
+
+                pendingChanges = true;
             }
             else
             {
-                var result = await WindowNavigation.ShowDialogAsync(() => 
-                {
-                    return new TimeSignatureDialogViewModel(item.BarInfo);
-                });
+                var result = await WindowNavigation.ShowDialog<BarInfo>(
+                    new TimeSignatureDialogViewModel(item.BarInfo));
 
-                if (result.IsConfirm)
-                    item.BarInfo = result.BarInfo;
+                if (result.Action == DialogAction.OK)
+                {
+                    item.BarInfo = result.Result;
+
+                    pendingChanges = true;
+                }
             }
         }
 
-        public void Delete(BarInfoGridItem item)
+        private void Delete(BarInfoGridItem item)
         {
             var index = Items.IndexOf(item);
 
@@ -166,9 +214,11 @@ namespace Proggy.ViewModels
                 Items.RemoveAt(index);
 
             pendingChanges = true;
+
+            this.RaisePropertyChanged(nameof(CanUseContextMenu));
         }
 
-        public async Task Save()
+        private async void Save()
         {
             var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
             
@@ -180,24 +230,22 @@ namespace Proggy.ViewModels
             }
             catch(Exception e)
             {
-                await WindowNavigation.ShowErrorMessageAsync(e);
+                await WindowNavigation.ShowErrorMessageDialog(e);
             }
         }
 
-        public async void Open()
+        private async void Open()
         {
             GlobalControls.Stop();
 
-            var result = await WindowNavigation.ShowDialogAsync(() => 
-            {
-                return new OpenClickTrackDialog(ClickTrackFile.Enumerate());
-            });
+            var result = await WindowNavigation.ShowDialog<string>(
+                new OpenClickTrackDialogViewModel(ClickTrackFile.Enumerate()));
 
-            if(result.IsConfirm)
+            if(result.Action == DialogAction.OK)
             {
                 try
                 {
-                    var track = await ClickTrackFile.Load(result.SelectedTrack);
+                    var track = await ClickTrackFile.Load(result.Result);
 
                     await PromptSave();
 
@@ -208,18 +256,18 @@ namespace Proggy.ViewModels
 
                     Items.Add(new AddButtonGridItem());
 
-                    TrackName = result.SelectedTrack;
+                    TrackName = result.Result;
 
                     Selection.RemoveSelection();
                 }
                 catch(Exception e)
                 {
-                    await WindowNavigation.ShowErrorMessageAsync(e);
+                    await WindowNavigation.ShowErrorMessageDialog(e);
                 }
             }
         }
 
-        public async void New()
+        private async void New()
         {
             if (AudioPlayer.Instance.IsPlaying)
                 return;
@@ -233,27 +281,21 @@ namespace Proggy.ViewModels
             InitializeTrack();
             SetNewTrackName();
         }
-
-        public async void Export()
+        
+        private async void Export()
         {
             var dialog = new SaveFileDialog()
             {
-                Title = "Export"
+                Title = "Export",
+                CheckPathExists = true,
+                CreatePrompt = true,
+                DefaultExt = ".wav",
+                Filter = "WAVE | .wav"
             };
 
-            var filter = new FileDialogFilter()
-            {
-                Name = "WAVE"
-            };
-            filter.Extensions.Add("wav");
+            bool? result = dialog.ShowDialog();
 
-            dialog.Filters.Add(filter);
-
-            var lifeTime = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-
-            var path = await dialog.ShowAsync(lifeTime.MainWindow);
-
-            if (string.IsNullOrEmpty(path))
+            if (result is null || result is false) //If no files were selected or the window was closed
                 return;
 
             var oldValue = loop;
@@ -264,15 +306,15 @@ namespace Proggy.ViewModels
 
             try
             {
-                WaveFileWriter.CreateWaveFile16(path, track);
+                WaveFileWriter.CreateWaveFile16(dialog.FileName, track);
             }
             catch(Exception e)
             {
-                await WindowNavigation.ShowErrorMessageAsync(e);
+                await WindowNavigation.ShowErrorMessageDialog(e);
             }
         }
 
-        public void Select(BarInfoGridItem item)
+        private void Select(BarInfoGridItem item)
         {
             if (Selection.IsSelecting)
                 EndSelection(item);
@@ -280,8 +322,11 @@ namespace Proggy.ViewModels
                 BeginSelection(item);
         }
 
-        public void BeginSelection(BarInfoGridItem item)
+        private void BeginSelection(BarInfoGridItem item)
         {
+            if (Items.Count <= 2)
+                return;
+
             ClearSelection();
 
             item.IsSelected = true;
@@ -289,7 +334,7 @@ namespace Proggy.ViewModels
             Selection.Begin(Items.IndexOf(item));
         }
 
-        public void EndSelection(BarInfoGridItem item)
+        private void EndSelection(BarInfoGridItem item)
         {
             Selection.Finalize(Items.IndexOf(item));
 
@@ -310,26 +355,31 @@ namespace Proggy.ViewModels
             }
         }
 
-        public void ClearSelection()
+        private void ClearSelection()
         {
             ApplySelection(false, true);
         }
 
-        public override void OnClosing()
+        private void ApplySelection(bool select, bool removeSelection)
         {
-            playbackChangedSub.Dispose();
-            GlobalControls.OnClosing();
-        }
+            if (Selection.HasSelection)
+            {
+                var range = Selection.Range;
 
-        public async Task PromptSave()
-        {
-            if (!pendingChanges)
-                return;
+                for (var i = range.Start; i <= range.End; i++)
+                {
+                    var bar = (BarInfoGridItem)Items[i];
+                    bar.IsSelected = select;
+                }
+            }
+            else if (Selection.IsSelecting)
+            {
+                var bar = (BarInfoGridItem)Items[Selection.Range.Start];
+                bar.IsSelected = select;
+            }
 
-            var result = await WindowNavigation.PromptAsync("Do you wish to save your track?", "Save?");
-
-            if (result == DialogAction.OK)
-                await Save();
+            if (removeSelection)
+                Selection.RemoveSelection();
         }
 
         private async Task<ISampleProvider> BuildClickTrackAsync()
@@ -375,28 +425,6 @@ namespace Proggy.ViewModels
                 precount,
                 loop)
             );
-        }
-
-        private void ApplySelection(bool select, bool removeSelection)
-        {
-            if (Selection.HasSelection)
-            {
-                var range = Selection.Range;
-
-                for (var i = range.Start; i <= range.End; i++)
-                {
-                    var bar = (BarInfoGridItem)Items[i];
-                    bar.IsSelected = select;
-                }
-            }
-            else if (Selection.IsSelecting)
-            {
-                var bar = (BarInfoGridItem)Items[Selection.Range.Start];
-                bar.IsSelected = select;
-            }
-
-            if (removeSelection)
-                Selection.RemoveSelection();
         }
 
         private void OnMetronomePlaybackStateChanged(MetronomePlaybackStateChanged msg)
@@ -465,7 +493,7 @@ namespace Proggy.ViewModels
             }
         }
 
-        private async void UpdateCurrentBar()
+        private void UpdateCurrentBar()
         {
             var current = (BarInfoGridItem)Items[currentItemIndex];
             current.IsSelected = true;
@@ -481,16 +509,14 @@ namespace Proggy.ViewModels
                 lastItem.IsSelected = false;
             }
 
+            Application.Current.Dispatcher.Invoke(() => ScrollToBar(currentItemIndex));
+
             if (currentItemIndex == lastItemIndex)
                 currentItemIndex = firstItemIndex;
             else
                 currentItemIndex++;
 
             timer.Interval = current.BarInfo.GetInterval(SelectedPlaybackSpeed.Value) * current.BarInfo.Beats;
-
-            //This should be done last
-            if(currentItemIndex % MaxRowsOrCols == 1)
-                await Dispatcher.UIThread.InvokeAsync(() => ScrollToBar(currentItemIndex));
         }
 
         private void SetNewTrackName()

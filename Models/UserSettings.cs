@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using NAudio.Wave.SampleProviders;
-using Material.Styles.Themes;
+using MaterialDesignThemes.Wpf;
 using Akavache;
 using Proggy.Core;
 

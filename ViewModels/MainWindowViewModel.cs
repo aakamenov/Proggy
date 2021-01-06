@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
+using System.Windows;
 using ReactiveUI;
 using Proggy.Infrastructure.Events;
 using Proggy.Infrastructure;
@@ -9,10 +10,9 @@ namespace Proggy.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public short WindowWidth => currentView is BasicModeViewModel ? basicSize.Item1 : advancedSize.Item1;
-        public short WindowHeight => currentView is BasicModeViewModel ? basicSize.Item2 : advancedSize.Item2;
-        public bool CanResize => currentView is BasicModeViewModel ? false : true;
-        public Action Shutdown { get; set; }
+        public double WindowWidth => currentView is BasicModeViewModel ? basicSize.Item1 : advancedSize.Item1;
+        public double WindowHeight => currentView is BasicModeViewModel ? basicSize.Item2 : advancedSize.Item2;
+        public ResizeMode CanResize => currentView is BasicModeViewModel ? ResizeMode.CanMinimize : ResizeMode.CanResize;
 
         public ViewModelBase CurrentView 
         {
@@ -21,15 +21,16 @@ namespace Proggy.ViewModels
         }
 
         private ViewModelBase currentView;
-        private (short, short) basicSize = (350, 250);
-        private (short, short) advancedSize = (780, 680);
+
+        private readonly (double, double) basicSize = (350, 250);
+        private readonly (double, double) advancedSize = (780, 723);
 
         public MainWindowViewModel()
         {
             currentView = new BasicModeViewModel();
             MessageBus.Current.Listen<ModeChanged>().Subscribe(OnModeChanged);
 
-            this.WhenAnyValue(x => x.CurrentView).Subscribe(_ => 
+            this.WhenAnyValue(x => x.CurrentView).Subscribe(_ =>
             {
                 this.RaisePropertyChanged(nameof(WindowWidth));
                 this.RaisePropertyChanged(nameof(WindowHeight));
@@ -42,10 +43,8 @@ namespace Proggy.ViewModels
             await PromptSave();
 
             CloseCurrentView();
-
-            Shutdown?.Invoke();
         }
-
+        
         private async void OnModeChanged(ModeChanged msg)
         {
             await PromptSave();
@@ -57,13 +56,13 @@ namespace Proggy.ViewModels
             else if (msg.Mode == MetronomeMode.Advanced)
                 CurrentView = new AdvancedModeViewModel();
         }
-
+        
         private void CloseCurrentView()
         {
             if (CurrentView != null)
                 CurrentView.OnClosing();
         }
-
+        
         private async Task PromptSave()
         {
             if (CurrentView is AdvancedModeViewModel vm)

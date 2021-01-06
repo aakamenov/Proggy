@@ -4,95 +4,101 @@ using System.Reactive.Linq;
 using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
+using System.Windows;
+using System.Windows.Controls;
 using Akavache;
 using Proggy.ViewModels;
+using Proggy.ViewModels.Dialogs;
+using MaterialDesignThemes.Wpf;
 
 namespace Proggy.Infrastructure
 {
     public static class WindowNavigation
     {
-        public static WindowInput CurrentWindowInput => windowInputs.Count > 0 ? windowInputs.Peek() : null;
-
-        private static readonly Stack<WindowInput> windowInputs;
-
-        static WindowNavigation()
-        {
-            windowInputs = new Stack<WindowInput>();
-        }
-
-        public static async Task<TViewModel> ShowDialogAsync<TViewModel>(Func<TViewModel> builder) where TViewModel : ViewModelBase
+        public static async Task<TViewModel> OpenWindow<TViewModel>(Func<TViewModel> builder) where TViewModel : ViewModelBase
         {
             var vm = builder();
 
-            var viewName = vm.GetType().Name.Replace("ViewModel", string.Empty);
-
-            Type windowType = null;
-
-            try
-            {
-                windowType = await BlobCache.InMemory.GetObject<Type>(viewName);
-            }
-            catch (KeyNotFoundException)
-            {
-                windowType = vm.GetType().Assembly.GetTypes().FirstOrDefault(x => x.Name == viewName);
-#if DEBUG
-                if (windowType is null)
-                    throw new InvalidOperationException($"Couldn't locate view with name: {windowType.FullName}");
-#endif
-
-                await BlobCache.InMemory.InsertObject(viewName, windowType);
-            }
+            var windowType = await FindView(vm.GetType());
 
             var window = Activator.CreateInstance(windowType) as Window;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.DataContext = vm;
 
-            PushWindow(window);
-            
-            var lifeTime = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-            await window.ShowDialog(lifeTime.MainWindow);
-
-            PopWindow();
+            window.ShowDialog();
             
             return vm;
         }
 
-        public static async Task ShowErrorMessageAsync(Exception e)
+        public static async Task<DialogResult> ShowDialog(BaseDialogViewModel vm)
         {
-            var message = string.Empty;
-            
+            var result =  await ShowDialogInternal(vm) as DialogResult;
+
+            //The static method DialogHost.Close was called
+            if (result is null)
+                return DialogResult.Cancel;
+
+            return result;
+        }
+
+        public static async Task<DialogResult<T>> ShowDialog<T>(BaseDialogViewModel vm)
+        {
+            var result = await ShowDialogInternal(vm) as DialogResult<T>;
+
+            //The static method DialogHost.Close was called
+            if (result is null)
+                return new DialogResult<T>(DialogAction.Cancel, default);
+
+            return result;
+        }
+
+        public static async Task<DialogResult> ShowErrorMessageDialog(Exception e)
+        {
+            string message;
+
             if (e is IOException || e is UnauthorizedAccessException)
                 message = e.Message;
             else
                 message = "An unknown error occurred.";
 
-            await ShowDialogAsync(() => 
+            return await ShowDialog(new AlertDialogViewModel(message));
+        }
+
+        private static async Task<object> ShowDialogInternal(BaseDialogViewModel vm)
+        {
+            var viewType = await FindView(vm.GetType());
+
+            var view = Activator.CreateInstance(viewType) as UserControl;
+            view.DataContext = vm;
+
+            return await DialogHost.Show(view, openedEventHandler: (sender, e) => 
             {
-                return new AlertDialogViewModel(message, "Error");
+                vm.Close = e.Session.Close;
             });
         }
 
-        public static async Task<DialogAction> PromptAsync(string message, string title = "Prompt")
+        private static async Task<Type> FindView(Type vm)
         {
-            var vm = await ShowDialogAsync(() => 
+            var viewName = vm.Name.Replace("ViewModel", string.Empty);
+
+            Type type = null;
+
+            try
             {
-                return new AlertDialogViewModel(message, title: title, isYesNo: true);
-            });
+                type = await BlobCache.InMemory.GetObject<Type>(viewName);
+            }
+            catch (KeyNotFoundException)
+            {
+                type = vm.Assembly.GetTypes().FirstOrDefault(x => x.Name == viewName);
+#if DEBUG
+                if (type is null)
+                    throw new InvalidOperationException($"Couldn't locate view with name: {type.FullName}");
+#endif
 
-            return vm.Result;
-        }
+                await BlobCache.InMemory.InsertObject(viewName, type);
+            }
 
-        public static void PushWindow(Window window)
-        {
-            windowInputs.Push(new WindowInput(window));
-        }
-
-        public static void PopWindow()
-        {
-            windowInputs.Pop();
+            return type;
         }
     }
 }

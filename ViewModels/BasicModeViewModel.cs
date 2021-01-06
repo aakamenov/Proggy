@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Proggy.Core;
 using Proggy.Models;
-using Proggy.Infrastructure;
+using Proggy.Infrastructure.Events;
 using NAudio.Wave;
 
 namespace Proggy.ViewModels

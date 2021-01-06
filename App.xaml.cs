@@ -1,51 +1,44 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Media;
-using Avalonia.Markup.Xaml;
-using Material.Styles.Themes;
-using Material.Styles.Themes.Base;
-using Akavache;
-using Proggy.Views;
+﻿using System.Windows;
+using System.Windows.Media;
 using Proggy.Models;
-using Proggy.Infrastructure;
+using Proggy.Core;
+using Akavache;
+using MaterialDesignThemes.Wpf;
+using MaterialDesignColors;
+
 
 namespace Proggy
 {
-    public class App : Application
+    /// <summary>
+    /// Interaction logic for App.xaml
+    /// </summary>
+    public partial class App : Application
     {
         private PaletteHelper paletteHelper;
 
-        public override void Initialize()
+        protected override async void OnStartup(StartupEventArgs e)
         {
-            BlobCache.ApplicationName = Constants.AppName;
+            base.OnStartup(e);
 
-            AvaloniaXamlLoader.Load(this);
+            BlobCache.ApplicationName = Constants.AppName;
 
             paletteHelper = new PaletteHelper();
             paletteHelper.GetThemeManager().ThemeChanged += OnThemeChanged;
 
             SetThemeColors(paletteHelper.GetTheme());
-        }
-
-        public async override void OnFrameworkInitializationCompleted()
-        {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                var window = new MainWindow()
-                {
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen
-                };
-
-                desktop.MainWindow = window;
-
-                WindowNavigation.PushWindow(window);
-            }
 
             var settings = await UserSettings.Get();
             paletteHelper.SetTheme(settings.Theme);
+            
+            Resources["ErrorTextColor"] = new SolidColorBrush(SwatchHelper.Lookup[MaterialDesignColor.Red]);
+        }
 
-            base.OnFrameworkInitializationCompleted();
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+
+            AudioPlayer.Instance.Dispose();
+            await BlobCache.Shutdown();
         }
 
         private void OnThemeChanged(object sender, ThemeChangedEventArgs e)
@@ -56,21 +49,21 @@ namespace Proggy
         private void SetThemeColors(ITheme theme)
         {
             Color primaryColor;
-            Color secondaryColor;
+            Color accentColor;
 
-            if(theme.GetBaseTheme() == BaseThemeMode.Dark)
+            if (theme.GetBaseTheme() == BaseTheme.Dark)
             {
                 primaryColor = theme.PrimaryDark.Color;
-                secondaryColor = theme.SecondaryDark.Color;
+                accentColor = theme.SecondaryDark.Color;
             }
             else
             {
                 primaryColor = theme.PrimaryLight.Color;
-                secondaryColor = theme.SecondaryLight.Color;
+                accentColor = theme.SecondaryLight.Color;
             }
 
-            Resources["PrimaryColor"] = primaryColor;
-            Resources["SecondaryColor"] = secondaryColor;
+            Resources["PrimaryColor"] = new SolidColorBrush(primaryColor);
+            Resources["AccentColor"] = new SolidColorBrush(accentColor);
         }
     }
 }

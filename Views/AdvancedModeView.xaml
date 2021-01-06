@@ -1,187 +1,219 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="650"
-        xmlns:controls="clr-namespace:Proggy.Controls"
-        xmlns:b="clr-namespace:Proggy.Controls.Behaviors"
-        xmlns:vm="clr-namespace:Proggy.ViewModels"
-        xmlns:m="clr-namespace:Proggy.ViewModels.CollectionItems"
-        xmlns:infrastructure="clr-namespace:Proggy.Infrastructure"
-        xmlns:converters="clr-namespace:Proggy.Infrastructure.Converters"             
-        xmlns:material="clr-namespace:Material.Styles;assembly=Material.Styles"
-        xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-        xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
-        xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        x:Class="Proggy.Views.AdvancedModeView">
+﻿<Page x:Class="Proggy.Views.AdvancedModeView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:controls="clr-namespace:Proggy.Controls"
+      xmlns:vm="clr-namespace:Proggy.ViewModels"
+      xmlns:m="clr-namespace:Proggy.ViewModels.CollectionItems"
+      xmlns:infrastructure="clr-namespace:Proggy.Infrastructure"
+      xmlns:converters="clr-namespace:Proggy.Infrastructure.Converters"             
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      mc:Ignorable="d" 
+      d:DesignWidth="780" d:DesignHeight="680"
+      Title="AdvancedModeView">
 
-  <UserControl.Resources>
-    <sys:Double x:Key="CellSize">90</sys:Double>
-  </UserControl.Resources>
-  
-  <DockPanel>
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <converters:BoolOrToVisibilityConverter x:Key="BoolOrToVis" />
+
+        <sys:Double x:Key="CellSize">90</sys:Double>
+    </Page.Resources>
+
+    <Page.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="N" Command="{Binding NewCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveCommand}"/>
+        <KeyBinding Modifiers="Ctrl" Key="D" Command="{Binding OnItemClickedCommand}"/>
+    </Page.InputBindings>
+
+    <material:DialogHost DialogTheme="Inherit" IsOpen="{Binding IsDialogOpen}">
+
+        <DockPanel x:Name="DockPanel">
+
+            <Menu DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignCardBackground}">
+
+                <MenuItem Header="File">
+
+                    <MenuItem Header="New (Ctrl+N)" Command="{Binding NewCommand}" />
+                    <MenuItem Header="Open (Ctrl+O)" Command="{Binding OpenCommand}"/>
+                    <MenuItem Header="Save (Ctrl+S)" Command="{Binding SaveCommand}" />
+                    <MenuItem Header="Export">
+                        <MenuItem Header="WAV" Command="{Binding ExportCommand}"/>
+                    </MenuItem>
+
+                </MenuItem>
+
+            </Menu>
+
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="4*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <controls:EditableTextBlock Grid.Row="0" Text="{Binding TrackName}" Margin="0,10,0,0" Padding="0" HorizontalAlignment="Center" />
+
+                <material:Card Grid.Row="1" Margin="0">
+                    <Grid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <TextBlock VerticalAlignment="Center" Margin="10,0,10,0">Playback speed:</TextBlock>
+                            <ComboBox SelectedItem="{Binding SelectedPlaybackSpeed}" ItemsSource="{Binding PlaybackSpeeds}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}" material:CheckBoxAssist.CheckBoxSize="30" Focusable="False" IsChecked="{Binding Precount}" VerticalAlignment="Center" Margin="0,0,10,0">Precount</CheckBox>
+                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}" material:CheckBoxAssist.CheckBoxSize="30" Focusable="False" IsChecked="{Binding Loop}" VerticalAlignment="Center" Margin="0,0,10,0">Loop</CheckBox>
+                        </StackPanel>
+
+                    </Grid>
+                </material:Card>
+
+                <Grid x:Name="Grid" Grid.Row="2" Margin="0,20,0,20" Width="{Binding ElementName=DockPanel, Path=ActualWidth}">
+
+                    <ItemsControl x:Name="BarItems" 
+                                  ItemsSource="{Binding Items}"
+                                  HorizontalAlignment="Center"
+                                  Width="{Binding ElementName=DockPanel, Path=ActualWidth}"
+                                  Height="{Binding ElementName=Grid, Path=ActualHeight}">
+
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+
+                                <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                              VerticalScrollBarVisibility="Visible"
+                                              MinWidth="{Binding ElementName=DockPanel, Path=ActualWidth}">
+
+                                    <ItemsPresenter HorizontalAlignment="Center" />
+
+                                </ScrollViewer>
+
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+
+                        <ItemsControl.Resources>
+
+                            <infrastructure:BindingProxy x:Key="Proxy" Data="{Binding}"/>
+
+                            <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
+
+                                <material:Card x:Name="BarBorder" Background="{DynamicResource MaterialDesignCardBackground}">
+
+                                    <Button x:Name="BarBtn"
+                                            Focusable="False"
+                                            Command="{Binding ElementName=BarItems, Path=DataContext.OnItemClickedCommand}"
+                                            CommandParameter="{Binding}" 
+                                            Width="{StaticResource ResourceKey=CellSize}"
+                                            Height="{StaticResource ResourceKey=CellSize}">
+
+                                        <Button.InputBindings>
+                                            <MouseBinding Gesture="Control+LeftClick" Command="{Binding Data.SelectCommand, Source={StaticResource Proxy}}" CommandParameter="{Binding}" />
+                                        </Button.InputBindings>
+
+                                        <Button.ContextMenu>
+
+                                            <ContextMenu Visibility="{Binding Data.CanUseContextMenu, Converter={StaticResource BoolToVis}, Source={StaticResource Proxy}}">
+
+                                                <MenuItem Header="Begin selection" 
+                                                          Visibility="{Binding Data.Selection.IsSelecting, Converter={StaticResource BoolToVis}, ConverterParameter=True, Source={StaticResource Proxy}}" 
+                                                          Command="{Binding Data.BeginSelectionCommand, Source={StaticResource Proxy}}" 
+                                                          CommandParameter="{Binding}">
+                                                </MenuItem>
+
+                                                <MenuItem Header="End selection"
+                                                          Visibility="{Binding Path=Data.Selection.IsSelecting, Converter={StaticResource BoolToVis}, Source={StaticResource Proxy}}" 
+                                                          Command="{Binding Data.EndSelectionCommand, Source={StaticResource Proxy}}" 
+                                                          CommandParameter="{Binding}">
+                                                </MenuItem>
+
+                                                <MenuItem Header="Clear selection"                                  
+                                                      Command="{Binding Data.ClearSelectionCommand, Source={StaticResource Proxy}}">
+
+                                                    <MenuItem.Visibility>
+                                                        <MultiBinding Converter="{StaticResource ResourceKey=BoolOrToVis}">
+                                                            <Binding Source="{StaticResource Proxy}" Path="Data.Selection.IsSelecting" />
+                                                            <Binding Source="{StaticResource Proxy}" Path="Data.Selection.HasSelection" />
+                                                        </MultiBinding>
+                                                    </MenuItem.Visibility>
+
+                                                </MenuItem>
+
+                                                <MenuItem Header="Delete" 
+                                                      Command="{Binding Data.DeleteCommand, Source={StaticResource Proxy}}" 
+                                                      CommandParameter="{Binding}"/>
+
+                                            </ContextMenu>
+
+                                        </Button.ContextMenu>
+
+                                        <Grid>
+
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="2*"/>
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="16" Text="{Binding BarInfo.Tempo}"></TextBlock>
+                                            <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="21" Text="{Binding TimeSignature}"></TextBlock>
+
+                                        </Grid>
+
+                                    </Button>
+
+                                </material:Card>
+
+                                <DataTemplate.Triggers>
+
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                                        <Setter Property="Background" TargetName="BarBorder" Value="{DynamicResource MaterialDesignCardBackground}" />
+                                    </DataTrigger>
+
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Background" TargetName="BarBorder" Value="{DynamicResource AccentColor}" />
+                                    </DataTrigger>
+
+                                </DataTemplate.Triggers>
+
+                            </DataTemplate>
+
+                            <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
+
+                                <material:Card>
+
+                                    <Button Focusable="False"
+                                        Command="{Binding Path=Data.OnItemClickedCommand, Source={StaticResource Proxy}}"
+                                        Width="{StaticResource ResourceKey=CellSize}"
+                                        Height="{StaticResource ResourceKey=CellSize}">
+
+                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
+                                    </Button>
+
+                                </material:Card>
+
+                            </DataTemplate>
+
+                        </ItemsControl.Resources>
+
+                    </ItemsControl>
+                </Grid>
+
+                <material:Card Grid.Row="3" HorizontalAlignment="Center">
+                    <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
+                </material:Card>
+
+            </Grid>
+        </DockPanel>
+
+    </material:DialogHost>
     
-    <Menu DockPanel.Dock="Top" Background="{DynamicResource MaterialDesignCardBackground}">
-      
-      <MenuItem Header="File">
-        
-        <MenuItem Header="New (Ctrl+N)" HotKey="Ctrl+N" Command="{Binding New}"/>       
-        <MenuItem Header="Open (Ctrl+O)" HotKey="Ctrl+O" Command="{Binding Open}"/>        
-        <MenuItem Header="Save (Ctrl+S)" HotKey="Ctrl+S" Command="{Binding Save}" />       
-        <MenuItem Header="Export">
-          <MenuItem Header="WAV" Command="{Binding Export}"/>
-        </MenuItem>
-        
-      </MenuItem>
-      
-    </Menu>
-  
-    <Grid DockPanel.Dock="Bottom" RowDefinitions="Auto, Auto, 4*, Auto">
-
-      <controls:EditableTextBlock Grid.Row="0" Text="{Binding TrackName}" HorizontalAlignment="Center" />
-
-      <material:Card Grid.Row="1">
-        <Grid>
-
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-            <TextBlock VerticalAlignment="Center" Margin="10,0,10,0">Playback speed:</TextBlock>
-            <ComboBox SelectedItem="{Binding SelectedPlaybackSpeed}" Items="{Binding PlaybackSpeeds}" />
-          </StackPanel>
-
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <ToggleSwitch Focusable="False" IsChecked="{Binding Precount}" VerticalAlignment="Center" Margin="0,0,10,0">Precount</ToggleSwitch>
-            <ToggleSwitch Focusable="False" IsChecked="{Binding Loop}" VerticalAlignment="Center" Margin="0,0,10,0">Loop</ToggleSwitch>
-          </StackPanel>
-
-        </Grid>
-      </material:Card>
-    
-      <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Margin="0,20,0,20">
-      
-        <ItemsRepeater x:Name="Items" Items="{Binding Items}" HorizontalAlignment="Center">
-        
-          <ItemsRepeater.Layout>
-
-            <UniformGridLayout
-              ItemsJustification="Start"
-              MinRowSpacing="5"
-              Orientation="Horizontal"
-              MaximumRowsOrColumns="{x:Static vm:AdvancedModeViewModel.MaxRowsOrCols}"
-              ItemsStretch="None">
-            </UniformGridLayout>
-
-          </ItemsRepeater.Layout>
-        
-          <ItemsRepeater.ItemTemplate>
-            <infrastructure:TypedElementFactory>
-              <infrastructure:TypedElementFactory.Templates>
-              
-                <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
-                
-                  <material:Card Background="{DynamicResource MaterialDesignCardBackground}" x:Name="Border">
-                  
-                    <i:Interaction.Behaviors>
-                    
-                      <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="true">
-                        <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource SecondaryColor}" />
-                      </ia:DataTriggerBehavior>
-                    
-                      <ia:DataTriggerBehavior Binding="{Binding IsSelected}" ComparisonCondition="Equal" Value="false">
-                        <ia:ChangePropertyAction TargetObject="{Binding #Border}" PropertyName="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
-                      </ia:DataTriggerBehavior>
-                      
-                    </i:Interaction.Behaviors>
-                  
-                    <Button x:Name="BarBtn"
-                            Focusable="False"
-                            Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}"
-                            CommandParameter="{Binding}" 
-                            Width="{StaticResource ResourceKey=CellSize}"
-                            Height="{StaticResource ResourceKey=CellSize}">
-                      
-                      <i:Interaction.Behaviors>
-
-                        <b:CtrlClickBehavior Button="{Binding #BarBtn}">
-                          <ia:InvokeCommandAction Command="{Binding $parent[ItemsRepeater].DataContext.Select}" CommandParameter="{Binding}" />
-                        </b:CtrlClickBehavior>
-
-                      </i:Interaction.Behaviors>
-                      
-                      <Button.ContextMenu>
-                        
-                        <ContextMenu IsVisible="{Binding $parent[ItemsRepeater].DataContext.CanUseContextMenu}">                                                
-                          
-                          <MenuItem Header="Begin selection" 
-                                    IsVisible="{Binding !$parent[ItemsRepeater].DataContext.Selection.IsSelecting}" 
-                                    Command="{Binding $parent[ItemsRepeater].DataContext.BeginSelection}" 
-                                    CommandParameter="{Binding}">                     
-                          </MenuItem>
-                          
-                          <MenuItem Header="End selection"
-                                    IsVisible="{Binding $parent[ItemsRepeater].DataContext.Selection.IsSelecting}" 
-                                    Command="{Binding $parent[ItemsRepeater].DataContext.EndSelection}" 
-                                    CommandParameter="{Binding}">
-                          </MenuItem>
-
-                          <MenuItem Header="Clear selection"                                  
-                                    Command="{Binding $parent[ItemsRepeater].DataContext.ClearSelection}">
-                            
-                            <MenuItem.IsVisible>
-                              <MultiBinding Converter="{x:Static converters:BoolConverters.Or}">
-                                <Binding Path="$parent[ItemsRepeater].DataContext.Selection.IsSelecting" />
-                                <Binding Path="$parent[ItemsRepeater].DataContext.Selection.HasSelection" />
-                              </MultiBinding>
-                            </MenuItem.IsVisible>
-                            
-                          </MenuItem>
-
-                          <MenuItem Header="Delete" 
-                                    Command="{Binding $parent[ItemsRepeater].DataContext.Delete}" 
-                                    CommandParameter="{Binding}"/>                          
-
-                        </ContextMenu>
-                        
-                      </Button.ContextMenu>
-                    
-                      <Grid RowDefinitions="*, 2*">
-                        <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="16" Text="{Binding BarInfo.Tempo}"></TextBlock>
-                        <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontSize="21" Text="{Binding TimeSignature}"></TextBlock>
-                      </Grid>
-                    
-                    </Button>
-                  
-                  </material:Card>
-                
-                </DataTemplate>
-              
-                <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
-                  
-                  <material:Card>
-                    
-                    <Button HotKey="Ctrl+D"
-                            Focusable="False"
-                            Command="{Binding $parent[ItemsRepeater].DataContext.OnItemClicked}"
-                            Width="{StaticResource ResourceKey=CellSize}"
-                            Height="{StaticResource ResourceKey=CellSize}">
-                      <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
-                    </Button>
-                    
-                  </material:Card>
-                  
-                </DataTemplate>
-              
-              </infrastructure:TypedElementFactory.Templates>
-            </infrastructure:TypedElementFactory>
-        
-          </ItemsRepeater.ItemTemplate>
-        
-        </ItemsRepeater>
-      </ScrollViewer>
-    
-      <material:Card Grid.Row="3" HorizontalAlignment="Center">
-        <controls:GlobalControls DataContext="{Binding GlobalControls}" DockPanel.Dock="Bottom"></controls:GlobalControls>
-      </material:Card>
-    
-    </Grid>
-  </DockPanel>
-</UserControl>
+</Page>

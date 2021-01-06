@@ -1,39 +1,37 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Data;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace Proggy.Controls
 {
-    public class EditableTextBlock : UserControl
+    /// <summary>
+    /// Interaction logic for EditableTextBlock.xaml
+    /// </summary>
+    public partial class EditableTextBlock : UserControl
     {
-        public static readonly StyledProperty<string> TextProperty =
-            AvaloniaProperty.Register<EditableTextBlock, string>(nameof(Text), defaultBindingMode: BindingMode.TwoWay);
+        public static readonly DependencyProperty TextProperty = 
+            DependencyProperty.Register(
+                nameof(Text),
+                typeof(string),
+                typeof(EditableTextBlock),
+                new FrameworkPropertyMetadata()
+                {
+                    BindsTwoWayByDefault = true,
+                    DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                });
 
         public string Text
         {
-            get => GetValue(TextProperty);
+            get => (string)GetValue(TextProperty);
             set => SetValue(TextProperty, value);
         }
-
-        private readonly TextBlock text;
-        private readonly TextBox textBox;
 
         private string oldTextValue;
 
         public EditableTextBlock()
         {
             InitializeComponent();
-
-            text = this.FindControl<TextBlock>("TextBlock");
-            textBox = this.FindControl<TextBox>("TextBox");
-
-            text.PointerPressed += OnTextPointerPressed;
-            textBox.LostFocus += OnTextBoxLostFocus;
-            textBox.KeyDown += OnTextBoxKeyDown;
-            
             HideTextBox();
         }
 
@@ -48,34 +46,29 @@ namespace Proggy.Controls
             HideTextBox();
         }
 
-        private void OnTextPointerPressed(object sender, PointerPressedEventArgs e)
+        private void OnTextBlockMouseDown(object sender, MouseButtonEventArgs e)
         {
             ShowTextBox();
         }
 
         private void ShowTextBox()
         {
-            text.IsVisible = false;
+            TextBlock.Visibility = Visibility.Collapsed;
 
-            textBox.IsVisible = true;
-            textBox.CaretIndex = textBox.Text.Length;
-            textBox.Focus();
-            
+            TextBox.Visibility = Visibility.Visible;
+            TextBox.CaretIndex = TextBox.Text.Length;
+            TextBox.Focus();
+
             oldTextValue = Text;
         }
 
         private void HideTextBox()
         {
-            text.IsVisible = true;
-            textBox.IsVisible = false;
+            TextBlock.Visibility = Visibility.Visible;
+            TextBox.Visibility = Visibility.Collapsed;
 
             if (string.IsNullOrWhiteSpace(Text))
                 Text = oldTextValue;
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
     }
 }

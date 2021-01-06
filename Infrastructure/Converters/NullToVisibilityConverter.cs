@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
-using MaterialDesignThemes.Wpf;
 
 namespace Proggy.Infrastructure.Converters
 {
-    public class ThemeToBoolConverter : IValueConverter
+    public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (BaseTheme)value == (BaseTheme)parameter;
+            if (value is null)
+                return Visibility.Collapsed;
+
+            return Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

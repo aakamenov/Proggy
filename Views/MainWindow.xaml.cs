@@ -1,49 +1,27 @@
 ﻿using System.ComponentModel;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using System.Windows;
 using Proggy.ViewModels;
 
 namespace Proggy.Views
 {
-    public class MainWindow : Window
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-        //This is to allow the VM to prompt the user before closing
-        //by cancelling the closing event and letting the VM to call the Close() function
-        private bool shutdown;
-
         public MainWindow()
         {
             InitializeComponent();
 
-            var vm = new MainWindowViewModel()
-            {
-                Shutdown = () => 
-                {
-                    shutdown = true;
-                    Close();
-                }
-            };
-
-            DataContext = vm;
-
             Closing += OnClosing;
+
+            DataContext = new MainWindowViewModel();
         }
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
             if (DataContext is ViewModelBase vm)
-            {
-                if (!shutdown)
-                {
-                    e.Cancel = true;
-                    vm.OnClosing();
-                }
-            }
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
+                vm.OnClosing();
         }
     }
 }

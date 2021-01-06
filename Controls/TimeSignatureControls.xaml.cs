@@ -1,34 +1,29 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace Proggy.Controls
 {
-    public class TimeSignatureControls : UserControl
+    /// <summary>
+    /// Interaction logic for TimeSignatureControls.xaml
+    /// </summary>
+    public partial class TimeSignatureControls : UserControl
     {
-        public static readonly DirectProperty<TimeSignatureControls, bool> ShowTempoBoxProperty =
-            AvaloniaProperty.RegisterDirect<TimeSignatureControls, bool>(
+        public static readonly DependencyProperty ShowTempoBoxProperty =
+            DependencyProperty.Register(
                 nameof(ShowTempoBox),
-                (x) => x.ShowTempoBox,
-                (x, y) => x.ShowTempoBox = y,
-                true);
+                typeof(bool),
+                typeof(TimeSignatureControls),
+                new UIPropertyMetadata(true));
 
         public bool ShowTempoBox
         {
-            get => showTempoBox;
-            set => SetAndRaise(ShowTempoBoxProperty, ref showTempoBox, value);
+            get => (bool)GetValue(ShowTempoBoxProperty);
+            set => SetValue(ShowTempoBoxProperty, value);
         }
-
-        private bool showTempoBox = true;
 
         public TimeSignatureControls()
         {
-            this.InitializeComponent();
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
+            InitializeComponent();
         }
     }
 }

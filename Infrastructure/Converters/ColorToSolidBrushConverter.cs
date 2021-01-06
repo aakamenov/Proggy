@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using Avalonia.Data.Converters;
-using Avalonia.Media;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace Proggy.Infrastructure.Converters
 {

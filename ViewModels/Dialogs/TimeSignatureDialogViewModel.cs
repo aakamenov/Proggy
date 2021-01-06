@@ -1,24 +1,19 @@
 ﻿using System;
 using Proggy.Core;
-using Proggy.Infrastructure;
 using ReactiveUI;
 
-namespace Proggy.ViewModels
+namespace Proggy.ViewModels.Dialogs
 {
-    public class TimeSignatureDialogViewModel : ViewModelBase, IDialog
+    public class TimeSignatureDialogViewModel : BaseDialogViewModel
     {
-        public Action Close { get; set; }
-        public bool IsConfirm { get; set; }
-        public TimeSignatureControlsViewModel TimeSignatureControls => timeSignatureControls;
+        public TimeSignatureControlsViewModel TimeSignatureControls { get; }
         public BarInfo BarInfo { get; private set; }
-
-        private readonly TimeSignatureControlsViewModel timeSignatureControls;
 
         public TimeSignatureDialogViewModel(BarInfo info)
         {
             BarInfo = info;
 
-            timeSignatureControls = new TimeSignatureControlsViewModel()
+            TimeSignatureControls = new TimeSignatureControlsViewModel()
             {
                 TempoNumericBoxValue = info.Tempo,
                 SelectedBeats = info.Beats,
@@ -47,9 +42,14 @@ namespace Proggy.ViewModels
                  ));
         }
 
-        public void Save()
+        protected override void Ok()
         {
-            Close?.Invoke();
+            Close.Invoke(new DialogResult<BarInfo>(DialogAction.OK, BarInfo));
+        }
+
+        protected override void Cancel()
+        {
+            Close.Invoke(new DialogResult<BarInfo>(DialogAction.Cancel, BarInfo.Default));
         }
     }
 }

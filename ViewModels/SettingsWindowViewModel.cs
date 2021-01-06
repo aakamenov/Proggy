@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Linq;
+using System.Windows.Media;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using ReactiveUI;
-using Material.Styles.Themes;
-using Material.Styles.Themes.Base;
-using Material.Colors;
-using Avalonia.Media;
+using MaterialDesignColors;
+using MaterialDesignThemes.Wpf;
 using Proggy.Core;
 using Proggy.Models;
 using Proggy.ViewModels.CollectionItems;
+using Proggy.Infrastructure.Commands;
 
 namespace Proggy.ViewModels
 {
-    public class SettingsDialogViewModel : ViewModelBase
+    public class SettingsWindowViewModel : ViewModelBase
     {
         public UserSettings UserSettings { get; }
         public ListItem<SignalGeneratorType>[] WaveTypes { get; }
@@ -39,7 +39,7 @@ namespace Proggy.ViewModels
         public string AccentClickFreqText => Math.Round(accentClickFreq).ToString();
         public string ClickFreqText => Math.Round(clickFreq).ToString();
 
-        public BaseThemeMode ThemeMode
+        public BaseTheme ThemeMode
         {
             get => themeMode;
             set => this.RaiseAndSetIfChanged(ref themeMode, value);
@@ -62,16 +62,20 @@ namespace Proggy.ViewModels
 
         public TimeSignatureControlsViewModel TimeSignatureControls { get; }
 
+        public Command TestClickCommand { get; }
+        public Command TestAccentClickCommand { get; }
+        public Command<BaseTheme> ChangeThemeCommand { get; }
+
         private readonly PaletteHelper paletteHelper;
 
         private double accentClickFreq;
         private double clickFreq;
         private ListItem<SignalGeneratorType> selectedWaveType;
-        private BaseThemeMode themeMode;
+        private BaseTheme themeMode;
         private Color primaryColor;
         private Color secondaryColor;
 
-        public SettingsDialogViewModel(UserSettings settings)
+        public SettingsWindowViewModel(UserSettings settings)
         {
             UserSettings = settings;
 
@@ -137,9 +141,13 @@ namespace Proggy.ViewModels
                     UserSettings.ClickSettings.PrecountBarBeats = x.Item1;
                     UserSettings.ClickSettings.PrecountBarNoteLength = x.Item2;
                 });
+
+            TestClickCommand = new Command(TestClick);
+            TestAccentClickCommand = new Command(TestAccentClick);
+            ChangeThemeCommand = new Command<BaseTheme>(ChangeThemeMode);
         }
 
-        public void TestAccentClick()
+        private void TestAccentClick()
         {
             var sound = new SignalGenerator()
             {
@@ -151,7 +159,7 @@ namespace Proggy.ViewModels
             AudioPlayer.Instance.PlaySound(sound);
         }
 
-        public void TestClick()
+        private void TestClick()
         {
             var sound = new SignalGenerator()
             {
@@ -163,7 +171,7 @@ namespace Proggy.ViewModels
             AudioPlayer.Instance.PlaySound(sound);
         }
 
-        public void ChangeThemeMode(BaseThemeMode themeMode)
+        private void ChangeThemeMode(BaseTheme themeMode)
         {
             ThemeMode = themeMode;
 
@@ -186,15 +194,15 @@ namespace Proggy.ViewModels
             {
                 var values = Enum.GetValues(@enum);
                 var result = new Color[values.Length];
-
+                
                 for (var i = 0; i < values.Length; i++)
-                    result[i] = SwatchHelper.Lookup[(MaterialColor)values.GetValue(i)];
+                    result[i] = SwatchHelper.Lookup[(MaterialDesignColor)values.GetValue(i)];
 
                 return result;
             }
-
-            PrimaryColors = Init(typeof(Material.Colors.PrimaryColor));
-            SecondaryColors = Init(typeof(Material.Colors.SecondaryColor));
+            
+            PrimaryColors = Init(typeof(PrimaryColor));
+            SecondaryColors = Init(typeof(SecondaryColor));
         }
     }
 }

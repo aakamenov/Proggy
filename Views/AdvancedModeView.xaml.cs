@@ -1,38 +1,33 @@
-﻿using System;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using System.Windows;
+using System.Windows.Controls;
 using Proggy.ViewModels;
 
 namespace Proggy.Views
 {
-    public class AdvancedModeView : UserControl
+    /// <summary>
+    /// Interaction logic for AdvancedModeView.xaml
+    /// </summary>
+    public partial class AdvancedModeView : Page
     {
-        private readonly ItemsRepeater items;
-
         public AdvancedModeView()
         {
             InitializeComponent();
 
-            items = this.FindControl<ItemsRepeater>("Items");
-
             DataContextChanged += OnDataContextChanged;
         }
 
-        private void OnDataContextChanged(object sender, EventArgs e)
-        {           
-            if(DataContext is AdvancedModeViewModel vm)
-                vm.ScrollToBar = ScrollTo;         
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DataContext is AdvancedModeViewModel vm)
+                vm.ScrollToBar = ScrollTo;
         }
 
         private void ScrollTo(int childIndex)
         {
-            var child = items.Children[childIndex];
-            child.BringIntoView();
-        }
+            var child = BarItems.ItemContainerGenerator.ContainerFromIndex(childIndex);
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
+            if (child is FrameworkElement element)
+                element.BringIntoView();
         }
     }
 }
