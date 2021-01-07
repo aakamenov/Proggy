@@ -107,7 +107,7 @@
 
                             <DataTemplate DataType="{x:Type m:BarInfoGridItem}">
 
-                                <material:Card x:Name="BarBorder" Background="{DynamicResource MaterialDesignCardBackground}">
+                                <material:Card x:Name="BarBorder" Background="{DynamicResource MaterialDesignCardBackground}" Focusable="False">
 
                                     <Button x:Name="BarBtn"
                                             Focusable="False"
@@ -188,14 +188,14 @@
 
                             <DataTemplate DataType="{x:Type m:AddButtonGridItem}">
 
-                                <material:Card>
+                                <material:Card Focusable="False">
 
                                     <Button Focusable="False"
-                                        Command="{Binding Path=Data.OnItemClickedCommand, Source={StaticResource Proxy}}"
-                                        Width="{StaticResource ResourceKey=CellSize}"
-                                        Height="{StaticResource ResourceKey=CellSize}">
+                                            Command="{Binding Path=Data.OnItemClickedCommand, Source={StaticResource Proxy}}"
+                                            Width="{StaticResource ResourceKey=CellSize}"
+                                            Height="{StaticResource ResourceKey=CellSize}">
 
-                                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">+</TextBlock>
+                                      <material:PackIcon Kind="PlusCircle" />
                                     </Button>
 
                                 </material:Card>

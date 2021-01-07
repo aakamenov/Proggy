@@ -427,7 +427,7 @@ namespace Proggy.ViewModels
             );
         }
 
-        private void OnMetronomePlaybackStateChanged(MetronomePlaybackStateChanged msg)
+        private async void OnMetronomePlaybackStateChanged(MetronomePlaybackStateChanged msg)
         {
             if (msg.State == MetronomePlaybackState.Playing)
             {
@@ -461,10 +461,14 @@ namespace Proggy.ViewModels
 
                     if (precount)
                     {
+                        var settings = await UserSettings.Get();
+                        var bar = settings.ClickSettings;
+
                         var first = (BarInfoGridItem)Items.First();
 
-                        timer.Interval = new BarInfo(first.BarInfo.Tempo, 4, 4)
-                            .GetInterval(SelectedPlaybackSpeed.Value) * 4;
+                        timer.Interval =
+                            new BarInfo(first.BarInfo.Tempo, bar.PrecountBarBeats, bar.PrecountBarNoteLength)
+                            .GetInterval(SelectedPlaybackSpeed.Value) * bar.PrecountBarBeats;
                     }
                     else
                         timer.Interval = 0;
