@@ -70,8 +70,8 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">Wave type:</TextBlock>
                             <ComboBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" ItemsSource="{Binding WaveTypes}" SelectedItem="{Binding SelectedWaveType}"/>
 
-                            <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center">Accent click frequency:</TextBlock>
-                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="1" Grid.Column="1">
+                            <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap">Accent click frequency:</TextBlock>
+                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
@@ -82,8 +82,8 @@
                                 <TextBlock Grid.Column="1" Text="{Binding AccentClickFreqText}" />
                             </Grid>
 
-                            <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center">Click frequency:</TextBlock>
-                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="2" Grid.Column="1">
+                            <TextBlock Margin="{StaticResource DescMargin}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap">Click frequency:</TextBlock>
+                            <Grid Margin="{StaticResource WidgetMargin}" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="3*"/>
