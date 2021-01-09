@@ -99,6 +99,8 @@ namespace Proggy.ViewModels
             selectedPlaybackSpeed = PlaybackSpeeds.First();
 
             GlobalControls = new GlobalControlsViewModel(BuildClickTrackAsync, MetronomeMode.Advanced);
+            GlobalControls.ToggleCommand.CanExecuteFunc = (p) => !IsDialogOpen;
+
             Selection = new Selection();
 
             Items = new ObservableCollection<ClickTrackGridItem>();

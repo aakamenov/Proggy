@@ -16,7 +16,7 @@
         <TextBox x:Name="TextBox"
                  Width="250"
                  Text="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=Text}"
-                 MaxLength="36"
+                 MaxLength="50"
                  KeyDown="OnTextBoxKeyDown"
                  LostFocus="OnTextBoxLostFocus">
         </TextBox>

@@ -23,6 +23,8 @@
 
     <Window.Resources>
 
+        <RoutedUICommand x:Key="AdvancedModeCommand"/>
+        
         <DataTemplate DataType="{x:Type vm:BasicModeViewModel}">
             <v:BasicModeView />
         </DataTemplate>
@@ -32,5 +34,19 @@
         </DataTemplate>
         
     </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource AdvancedModeCommand}" Executed="OnAdvancedModeCommandExecuted"/>
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Key="Space" Command="{Binding CurrentView.GlobalControls.ToggleCommand}" />
+
+        <!--Advanced mode only commands-->
+        <KeyBinding Modifiers="Ctrl" Key="N" Command="{StaticResource AdvancedModeCommand}" CommandParameter="NewCommand"/>
+        <KeyBinding Modifiers="Ctrl" Key="O" Command="{StaticResource AdvancedModeCommand}" CommandParameter="OpenCommand"/>
+        <KeyBinding Modifiers="Ctrl" Key="S" Command="{StaticResource AdvancedModeCommand}" CommandParameter="SaveCommand"/>
+        <KeyBinding Modifiers="Ctrl" Key="D" Command="{StaticResource AdvancedModeCommand}" CommandParameter="OnItemClickedCommand"/>
+    </Window.InputBindings>
 
 </Window>

@@ -11,8 +11,9 @@ namespace Proggy.Infrastructure.Commands
             remove { CommandManager.RequerySuggested -= value; }
         }
 
+        public Predicate<object> CanExecuteFunc { get; set; }
+
         private readonly Action execute;
-        private readonly Predicate<object> canExecute;
 
         public Command(Action execute) : this(execute, null) { }
 
@@ -22,12 +23,12 @@ namespace Proggy.Infrastructure.Commands
                 throw new ArgumentNullException("execute");
 
             this.execute = execute;
-            this.canExecute = canExecute;
+            CanExecuteFunc = canExecute;
         }
 
         public bool CanExecute(object parameter)
         {
-            return canExecute == null ? true : canExecute(parameter);
+            return CanExecuteFunc == null ? true : CanExecuteFunc(parameter);
         }
 
         public void Execute(object parameter)
@@ -44,8 +45,9 @@ namespace Proggy.Infrastructure.Commands
             remove { CommandManager.RequerySuggested -= value; }
         }
 
+        public Predicate<object> CanExecuteFunc { get; set; }
+
         private readonly Action<TArg> execute;
-        private readonly Predicate<object> canExecute;
 
         public Command(Action<TArg> execute) : this(execute, null) { }
 
@@ -55,12 +57,12 @@ namespace Proggy.Infrastructure.Commands
                 throw new ArgumentNullException("execute");
 
             this.execute = execute;
-            this.canExecute = canExecute;
+            CanExecuteFunc = canExecute;
         }
 
         public bool CanExecute(object parameter)
         {
-            return canExecute == null ? true : canExecute(parameter);
+            return CanExecuteFunc == null ? true : CanExecuteFunc(parameter);
         }
 
         public void Execute(object parameter)

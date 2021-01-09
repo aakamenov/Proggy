@@ -21,13 +21,6 @@
         <sys:Double x:Key="CellSize">90</sys:Double>
     </Page.Resources>
 
-    <Page.InputBindings>
-        <KeyBinding Modifiers="Ctrl" Key="N" Command="{Binding NewCommand}"/>
-        <KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenCommand}"/>
-        <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveCommand}"/>
-        <KeyBinding Modifiers="Ctrl" Key="D" Command="{Binding OnItemClickedCommand}"/>
-    </Page.InputBindings>
-
     <material:DialogHost DialogTheme="Inherit" IsOpen="{Binding IsDialogOpen}">
 
         <DockPanel x:Name="DockPanel">
