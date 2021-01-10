@@ -198,6 +198,8 @@
                         </ItemsControl.Resources>
 
                     </ItemsControl>
+
+                    <material:Snackbar MessageQueue="{Binding MessageQueue}" />
                 </Grid>
 
                 <material:Card Grid.Row="3" HorizontalAlignment="Center">

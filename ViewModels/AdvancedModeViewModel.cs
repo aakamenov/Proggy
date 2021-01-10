@@ -62,6 +62,8 @@ namespace Proggy.ViewModels
 
         public GlobalControlsViewModel GlobalControls { get; }
 
+        public SnackbarMessageQueue MessageQueue { get; }
+
         public Command<BarInfoGridItem> OnItemClickedCommand { get; }
         public Command<BarInfoGridItem> DeleteCommand { get; }
         public Command<BarInfoGridItem> SelectCommand { get; }
@@ -73,7 +75,7 @@ namespace Proggy.ViewModels
         public Command ExportCommand { get; }
         public Command ClearSelectionCommand { get; }
 
-        private IDisposable playbackChangedSub;
+        private readonly IDisposable playbackChangedSub;
 
         private bool loop;
         private bool precount;
@@ -113,6 +115,8 @@ namespace Proggy.ViewModels
             playbackChangedSub = MessageBus.Current.Listen<MetronomePlaybackStateChanged>()
                                                    .Subscribe(OnMetronomePlaybackStateChanged);
 
+            MessageQueue = new SnackbarMessageQueue();
+
             timer = new AccurateTimer(UpdateCurrentBar);
 
             SetNewTrackName();
@@ -133,6 +137,7 @@ namespace Proggy.ViewModels
         {
             playbackChangedSub.Dispose();
             GlobalControls.OnClosing();
+            MessageQueue.Dispose();
         }
 
         public async Task PromptSave()
@@ -229,6 +234,8 @@ namespace Proggy.ViewModels
                 await ClickTrackFile.Save(infos, TrackName);
 
                 pendingChanges = false;
+
+                MessageQueue.Enqueue($"Saved \"{TrackName}\"");
             }
             catch(Exception e)
             {
@@ -309,6 +316,8 @@ namespace Proggy.ViewModels
             try
             {
                 WaveFileWriter.CreateWaveFile16(dialog.FileName, track);
+
+                MessageQueue.Enqueue($"Exported track to \"{dialog.FileName}\"");
             }
             catch(Exception e)
             {
