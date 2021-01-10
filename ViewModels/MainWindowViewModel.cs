@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using System.Windows;
 using ReactiveUI;
 using Proggy.Infrastructure.Events;
-using Proggy.Infrastructure;
 
 namespace Proggy.ViewModels
 {
@@ -40,14 +39,14 @@ namespace Proggy.ViewModels
 
         public override async void OnClosing()
         {
-            await PromptSave();
+            await PromptSave(true);
 
             CloseCurrentView();
         }
         
         private async void OnModeChanged(ModeChanged msg)
         {
-            await PromptSave();
+            await PromptSave(false);
 
             CloseCurrentView();
 
@@ -63,10 +62,13 @@ namespace Proggy.ViewModels
                 CurrentView.OnClosing();
         }
         
-        private async Task PromptSave()
+        private async Task PromptSave(bool exiting)
         {
             if (CurrentView is AdvancedModeViewModel vm)
                 await vm.PromptSave();
+
+            if (exiting)
+                Application.Current.Shutdown();
         }
     }
 }

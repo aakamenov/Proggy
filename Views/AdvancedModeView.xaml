@@ -19,6 +19,7 @@
         <converters:BoolOrToVisibilityConverter x:Key="BoolOrToVis" />
 
         <sys:Double x:Key="CellSize">90</sys:Double>
+        <sys:Boolean x:Key="True">True</sys:Boolean>
     </Page.Resources>
 
     <material:DialogHost DialogTheme="Inherit" IsOpen="{Binding IsDialogOpen}">
@@ -31,7 +32,7 @@
 
                     <MenuItem Header="New (Ctrl+N)" Command="{Binding NewCommand}" />
                     <MenuItem Header="Open (Ctrl+O)" Command="{Binding OpenCommand}"/>
-                    <MenuItem Header="Save (Ctrl+S)" Command="{Binding SaveCommand}" />
+                    <MenuItem Header="Save (Ctrl+S)" Command="{Binding SaveCommand}" CommandParameter="{StaticResource True}" />
                     <MenuItem Header="Export">
                         <MenuItem Header="WAV" Command="{Binding ExportCommand}"/>
                     </MenuItem>

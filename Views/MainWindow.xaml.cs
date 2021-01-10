@@ -10,6 +10,8 @@ namespace Proggy.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool closing;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -21,8 +23,18 @@ namespace Proggy.Views
 
         private void OnClosing(object sender, CancelEventArgs e)
         {
+            if (closing)
+                return;
+
             if (DataContext is ViewModelBase vm)
+            {
+                closing = true;
+
+                if (Content is AdvancedModeViewModel)
+                    e.Cancel = true;
+
                 vm.OnClosing();
+            }
         }
 
         private void OnAdvancedModeCommandExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -43,7 +55,7 @@ namespace Proggy.Views
                         vm.OpenCommand.Execute(null);
                         break;
                     case nameof(AdvancedModeViewModel.SaveCommand):
-                        vm.SaveCommand.Execute(null);
+                        vm.SaveCommand.Execute(true);
                         break;
                     case nameof(AdvancedModeViewModel.OnItemClickedCommand):
                         vm.OnItemClickedCommand.Execute(null);

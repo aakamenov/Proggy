@@ -69,7 +69,7 @@ namespace Proggy.ViewModels
         public Command<BarInfoGridItem> SelectCommand { get; }
         public Command<BarInfoGridItem> BeginSelectionCommand { get; }
         public Command<BarInfoGridItem> EndSelectionCommand { get; }
-        public Command SaveCommand { get; }
+        public Command<bool> SaveCommand { get; }
         public Command NewCommand { get; }
         public Command OpenCommand { get; }
         public Command ExportCommand { get; }
@@ -127,7 +127,7 @@ namespace Proggy.ViewModels
             BeginSelectionCommand = new Command<BarInfoGridItem>(BeginSelection);
             EndSelectionCommand = new Command<BarInfoGridItem>(EndSelection);
             ClearSelectionCommand = new Command(ClearSelection);
-            SaveCommand = new Command(Save);
+            SaveCommand = new Command<bool>(Save);
             NewCommand = new Command(New);
             OpenCommand = new Command(Open);
             ExportCommand = new Command(Export);
@@ -152,7 +152,7 @@ namespace Proggy.ViewModels
                 new AlertDialogViewModel("Do you wish to save your track?", true));
 
             if (result.Action == DialogAction.OK)
-                SaveCommand.Execute(null);
+                SaveCommand.Execute(false);
         }
 
         private async void OnItemClicked(BarInfoGridItem item)
@@ -225,7 +225,7 @@ namespace Proggy.ViewModels
             this.RaisePropertyChanged(nameof(CanUseContextMenu));
         }
 
-        private async void Save()
+        private async void Save(bool notify)
         {
             var infos = Items.OfType<BarInfoGridItem>().Select(x => x.BarInfo).ToArray();
             
@@ -235,7 +235,8 @@ namespace Proggy.ViewModels
 
                 pendingChanges = false;
 
-                MessageQueue.Enqueue($"Saved \"{TrackName}\"");
+                if(notify)
+                    MessageQueue.Enqueue($"Saved \"{TrackName}\"");
             }
             catch(Exception e)
             {
