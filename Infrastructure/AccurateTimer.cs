@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Diagnostics;
 
 namespace Proggy.Infrastructure
@@ -9,8 +9,10 @@ namespace Proggy.Infrastructure
         public int Interval { get; set; } = 100;
 
         private bool isRunning;
-        private Action callback;
-        private Stopwatch stopwatch;
+        private Thread thread;
+
+        private readonly Action callback;
+        private readonly Stopwatch stopwatch;
 
         public AccurateTimer(Action callback)
         {
@@ -20,32 +22,39 @@ namespace Proggy.Infrastructure
 
         public void Start()
         {
-            stopwatch.Start();
-
-            isRunning = true;
-
-            Task.Run(() => 
+            thread = new Thread(new ThreadStart(MeasureTime))
             {
-                var lastRecorded = stopwatch.ElapsedMilliseconds;
+                IsBackground = true
+            };
 
-                while (isRunning)
-                {
-                    var delta = stopwatch.ElapsedMilliseconds - lastRecorded;
-
-                    if (delta >= Interval)
-                    {
-                        callback();
-
-                        lastRecorded = stopwatch.ElapsedMilliseconds;
-                    }
-                }
-            });
+            thread.Start();
         }
 
         public void Stop()
         {
             isRunning = false;
             stopwatch.Reset();
+        }
+
+        private void MeasureTime()
+        {
+            stopwatch.Start();
+
+            isRunning = true;
+
+            var lastRecorded = stopwatch.ElapsedMilliseconds;
+
+            while (isRunning)
+            {
+                var delta = stopwatch.ElapsedMilliseconds - lastRecorded;
+
+                if (delta >= Interval)
+                {
+                    callback();
+
+                    lastRecorded = stopwatch.ElapsedMilliseconds;
+                }
+            }
         }
     }
 }

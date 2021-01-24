@@ -12,7 +12,7 @@ namespace Proggy.Infrastructure.Converters
         {
             //https://github.com/dotnet/wpf/issues/1706
             if (values.Any(x => x == DependencyProperty.UnsetValue))
-                return null;
+                return Visibility.Collapsed;
 
             var val = values.Cast<bool>().Any(x => x == true);
 

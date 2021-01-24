@@ -11,7 +11,7 @@ namespace Proggy.ViewModels
     {
         public double WindowWidth => currentView is BasicModeViewModel ? basicSize.Item1 : advancedSize.Item1;
         public double WindowHeight => currentView is BasicModeViewModel ? basicSize.Item2 : advancedSize.Item2;
-        public ResizeMode CanResize => currentView is BasicModeViewModel ? ResizeMode.CanMinimize : ResizeMode.CanResize;
+        public ResizeMode ResizeMode => currentView is BasicModeViewModel ? ResizeMode.CanMinimize : ResizeMode.CanResize;
 
         public ViewModelBase CurrentView 
         {
@@ -33,7 +33,7 @@ namespace Proggy.ViewModels
             {
                 this.RaisePropertyChanged(nameof(WindowWidth));
                 this.RaisePropertyChanged(nameof(WindowHeight));
-                this.RaisePropertyChanged(nameof(CanResize));
+                this.RaisePropertyChanged(nameof(ResizeMode));
             });
         }
 
