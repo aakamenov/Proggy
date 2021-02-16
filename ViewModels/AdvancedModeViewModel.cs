@@ -476,7 +476,7 @@ namespace Proggy.ViewModels
                         var settings = await UserSettings.Get();
                         var bar = settings.ClickSettings;
 
-                        var first = (BarInfoGridItem)Items.First();
+                        var first = (BarInfoGridItem)Items[currentItemIndex];
 
                         timer.Interval =
                             new BarInfo(first.BarInfo.Tempo, bar.PrecountBarBeats, bar.PrecountBarNoteLength)

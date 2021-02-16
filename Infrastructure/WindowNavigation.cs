@@ -32,7 +32,7 @@ namespace Proggy.Infrastructure
 
         public static async Task<DialogResult> ShowDialog(BaseDialogViewModel vm)
         {
-            var result =  await ShowDialogInternal(vm) as DialogResult;
+            var result = await ShowDialogInternal(vm) as DialogResult;
 
             //The static method DialogHost.Close was called
             if (result is null)

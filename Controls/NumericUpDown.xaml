@@ -13,8 +13,8 @@
                 <RowDefinition Height="20"/>
                 <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
-            <RepeatButton Name="UpButton" Grid.Row="0" VerticalContentAlignment="Center" FontSize="10" HorizontalContentAlignment="Center" Click="OnUpButtonClick">˄</RepeatButton>
-            <RepeatButton Name="DownButton" Grid.Row="1" VerticalContentAlignment="Center" FontSize="10" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" Click="OnDownButtonClick">˅</RepeatButton>
+            <RepeatButton Name="UpButton" Grid.Row="0" VerticalContentAlignment="Center" Focusable="False" FontSize="10" HorizontalContentAlignment="Center" Click="OnUpButtonClick">˄</RepeatButton>
+            <RepeatButton Name="DownButton" Grid.Row="1" VerticalContentAlignment="Center" Focusable="False" FontSize="10" HorizontalContentAlignment="Center" VerticalAlignment="Bottom" Click="OnDownButtonClick">˅</RepeatButton>
         </Grid>
     </StackPanel>
 
